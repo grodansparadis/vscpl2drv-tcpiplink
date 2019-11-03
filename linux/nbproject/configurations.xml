@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <in>test.cpp</in>
+      <in>vscpl2drv_tcpiplink.cpp</in>
+      <in>vscptcpiplink.cpp</in>
+    </df>
+    <logicalFolder name="src" displayName="src" projectFiles="true" root="../../..">
+      <logicalFolder name="common" displayName="common" projectFiles="true">
+        <itemPath>../../../../../common/aes.c</itemPath>
+        <itemPath>../../../../../common/aes.h</itemPath>
+        <itemPath>../../../../../common/crc.c</itemPath>
+        <itemPath>../../../../../common/crc.h</itemPath>
+        <itemPath>../../../../../common/crc8.c</itemPath>
+        <itemPath>../../../../../common/crc8.h</itemPath>
+        <itemPath>../../../../../common/dllist.h</itemPath>
+        <itemPath>../../../../../common/fastpbkdf2.c</itemPath>
+        <itemPath>../../../../../common/fastpbkdf2.h</itemPath>
+        <itemPath>../../../../../common/mongoose.c</itemPath>
+        <itemPath>../../../../../common/mongoose.h</itemPath>
+        <itemPath>../../../../../common/vscp_aes.c</itemPath>
+        <itemPath>../../../../../common/vscp_aes.h</itemPath>
+        <itemPath>../../../../../common/vscpbase64.c</itemPath>
+        <itemPath>../../../../../common/vscpbase64.h</itemPath>
+        <itemPath>../../../../../common/vscpmd5.c</itemPath>
+        <itemPath>../../../../../common/vscpmd5.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="vscp" displayName="vscp" projectFiles="true">
+        <logicalFolder name="common" displayName="common" projectFiles="true">
+          <itemPath>../../../../common/canal.h</itemPath>
+          <itemPath>../../../../common/canal_macro.h</itemPath>
+          <itemPath>../../../../common/guid.cpp</itemPath>
+          <itemPath>../../../../common/guid.h</itemPath>
+          <itemPath>../../../../common/mdf.h</itemPath>
+          <itemPath>../../../../common/vscp.h</itemPath>
+          <itemPath>../../../../common/vscp_class.h</itemPath>
+          <itemPath>../../../../common/vscp_type.h</itemPath>
+          <itemPath>../../../../common/vscphelper.cpp</itemPath>
+          <itemPath>../../../../common/vscphelper.h</itemPath>
+          <itemPath>../../../../common/vscpremotetcpif.cpp</itemPath>
+          <itemPath>../../../../common/vscpremotetcpif.h</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-fPIC -O2 -fPIC"/>
+        <element flagsID="1" commonFlags="-std=c99 -g -O2 -fPIC"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>/usr/local/lib/wx/include/gtk2-unicode-3.0</pElem>
+              <pElem>/usr/local/include/wx-3.0</pElem>
+              <pElem>../../../../common</pElem>
+              <pElem>../../../../../common</pElem>
+              <pElem>.</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>CBC</Elem>
+              <Elem>WXUSINGDLL</Elem>
+              <Elem>_FILE_OFFSET_BITS=64</Elem>
+              <Elem>__WXGTK__</Elem>
+              <Elem>wxUSE_GUI=0</Elem>
+            </preprocessorList>
+          </cTool>
+          <ccTool>
+            <incDir>
+              <pElem>/usr/local/lib/wx/include/gtk2-unicode-3.0</pElem>
+              <pElem>/usr/local/include/wx-3.0</pElem>
+              <pElem>../../../../common</pElem>
+              <pElem>../../../../../common</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>MG_ENABLE_GETADDRINFO</Elem>
+              <Elem>MG_ENABLE_IPV6</Elem>
+              <Elem>MG_ENABLE_SSL</Elem>
+              <Elem>MG_ENABLE_THREADS</Elem>
+              <Elem>WXUSINGDLL</Elem>
+              <Elem>_FILE_OFFSET_BITS=64</Elem>
+              <Elem>_REENTRANT</Elem>
+              <Elem>__LINUX__</Elem>
+              <Elem>__WXGTK__</Elem>
+              <Elem>wxUSE_GUI=0</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand></preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="../../../../../common/aes.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+          <preprocessorList>
+            <Elem>MG_ENABLE_GETADDRINFO</Elem>
+            <Elem>MG_ENABLE_IPV6</Elem>
+            <Elem>MG_ENABLE_SSL</Elem>
+            <Elem>MG_ENABLE_THREADS</Elem>
+            <Elem>__LINUX__</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../../../../common/crc.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../../../../common/crc8.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../../../../common/fastpbkdf2.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../../../../common/mongoose.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../../../../common/vscp_aes.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../../../../common/vscpbase64.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../../../../common/vscpmd5.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
+        </cTool>
+      </item>
+      <item path="../../../../common/guid.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../../../../common/vscphelper.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="../../../../common/vscpremotetcpif.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <folder path="src">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <item path="test.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="vscpl2drv_tcpiplink.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="vscptcpiplink.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
