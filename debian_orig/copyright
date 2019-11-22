@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: vscpl2drv-tcpiplink.so
+Upstream-Name: vscpl2drv-tcpiplink
 Upstream-Contact: Ake Hedman <akhe@grodansparadis.com>
-Source: https://github.com/grodansparadis/vscpl2drv-tcpiplink.so
+Source: https://github.com/grodansparadis/vscpl2drv-tcpiplink
 
 Files: *
 Copyright: 2000-2019 Ake Hedman <akhe@grodansparadis.com>

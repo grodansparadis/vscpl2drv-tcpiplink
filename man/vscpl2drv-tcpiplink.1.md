@@ -1,14 +1,14 @@
-% vscpl2drv-tcpiplink.so(1) VSCP Level II Logger Driver
+% vscpl2drv-tcpiplink(1) VSCP Level II Logger Driver
 % Åke Hedmann, Grodans Paradis AB
 % September 28, 2019
 
 # NAME
 
-vscpl2drv-tcpiplink.so - VSCP Level I Socketcan Driver
+vscpl2drv-tcpiplink - VSCP Level I Socketcan Driver
 
 # SYNOPSIS
 
-vscpl2drv-tcpiplink.so
+vscpl2drv-tcpiplink
 
 # DESCRIPTION
 
@@ -25,7 +25,7 @@ Add the driver to the vscpd configuration file (default location */etc/vscp/vscp
 ```xml
 <driver enable="true" >
     <name>socketcan1</name>
-    <path>/usr/lib/vscpl2drv_socketcan.so</path>
+    <path>/usr/lib/vscpl2drv_tcpiplink.so</path>
     <config>can</config>
     <guid>FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:0A:11:02:00:00</guid>
 </driver>
