@@ -1,0 +1,6 @@
+#!/bin/bash
+
+pandoc -s -t man vscpl2drv-tcpiplink.so.1.md -o vscpl2drv-tcpiplink.so.1
+sudo cp vscpl2drv-tcpiplink.so.1 /usr/share/man/man1/
+
+mandb

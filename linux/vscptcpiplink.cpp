@@ -614,7 +614,7 @@ void *
 workerThreadReceive(void *pData)
 {
     bool bRemoteConnectionLost = false;
-    bool bActivity             = false;
+    __attribute__((unused)) bool bActivity             = false;
 
     CTcpipLink *pObj = (CTcpipLink *)pData;
     if (NULL == pObj) return NULL;
@@ -660,7 +660,7 @@ retry_receive_connect:
     // Enter the receive loop
     pObj->m_srvRemote.doCmdEnterReceiveLoop();
 
-    vscpEventEx eventEx;
+    __attribute__((unused)) vscpEventEx eventEx;
     while (!pObj->m_bQuit) {
 
         // Make sure the remote connection is up

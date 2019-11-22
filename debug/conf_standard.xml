@@ -1,0 +1,12 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+    <!-- Version 0.0.1    2019-11-05   -->
+    <config debug="true"
+            write="true"
+            zone="1"
+            subzone="2"
+            longitude="15.1604167"
+            latitude="61.7441833"
+            enable-sunrise="true"
+            enable-sunrise-twilight="true"
+            enable-sunset="true"
+            enable-sunset-twilight="true" />

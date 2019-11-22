@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with autoreconf
+
+override_dh_shlibdeps:
+	dpkg-shlibdeps -Tdebian/vscpl2drv-tcpiplink.so.substvars $$(pwd)/debian/vscpl2drv-tcpiplink.so%MAJOR-VERSION/usr/lib/%SUBFOLDER/vscpl2drv-tcpiplink.so.so.%MAJOR-VERSION.%MINOR-VERSION.%RELEASE-VERSION
+
+
+override_dh_auto_install:
+	strip linux/vscpl2drv-tcpiplink.so.so.%MAJOR-VERSION.%MINOR-VERSION.%RELEASE-VERSION
+

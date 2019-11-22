@@ -1,0 +1,1 @@
+vscpl2drv-tcpiplink.so %MAJOR-VERSION vscpl2drv-tcpiplink.so%MAJOR-VERSION (>= %MAJOR-VERSION.%MINOR-VERSION-%RELEASE-DEBIAN) 
