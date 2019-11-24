@@ -60,13 +60,13 @@
 #include "vscptcpiplink.h"
 
 // Buffer for XML parser
-#define XML_BUFF_SIZE 10000
+#define XML_BUFF_SIZE 100000
 
 // Forward declaration
-void *
-workerThreadReceive(void *pData);
-void *
-workerThreadSend(void *pData);
+void*
+workerThreadReceive(void* pData);
+void*
+workerThreadSend(void* pData);
 
 //////////////////////////////////////////////////////////////////////
 // CTcpipLink
@@ -74,8 +74,8 @@ workerThreadSend(void *pData);
 
 CTcpipLink::CTcpipLink()
 {
-    m_bQuit          = false;
-    m_pthreadSend    = NULL;
+    m_bQuit = false;
+    m_pthreadSend = NULL;
     m_pthreadReceive = NULL;
     vscp_clearVSCPFilter(&m_rxfilter); // Accept all events
     vscp_clearVSCPFilter(&m_txfilter); // Send all events
@@ -128,10 +128,11 @@ CTcpipLink::~CTcpipLink()
 int depth_setup_parser = 0;
 
 void
-startSetupParser(void *data, const char *name, const char **attr)
+startSetupParser(void* data, const char* name, const char** attr)
 {
-    CTcpipLink *pObj = (CTcpipLink *)data;
-    if (NULL == pObj) return;
+    CTcpipLink* pObj = (CTcpipLink*)data;
+    if (NULL == pObj)
+        return;
 
     if ((0 == strcmp(name, "setup")) && (0 == depth_setup_parser)) {
 
@@ -160,14 +161,18 @@ startSetupParser(void *data, const char *name, const char **attr)
                 if (!attribute.empty()) {
                     if (!vscp_readFilterFromString(&pObj->m_rxfilter,
                                                    attribute)) {
-                        syslog(LOG_ERR, "Unable to read event receive filter.");
+                        syslog(LOG_ERR,
+                               "[vscpl2drv-tcpiplink] Unable to read "
+                               "event receive filter.");
                     }
                 }
             } else if (0 == strcasecmp(attr[i], "rxmask")) {
                 if (!attribute.empty()) {
                     if (!vscp_readMaskFromString(&pObj->m_rxfilter,
                                                  attribute)) {
-                        syslog(LOG_ERR, "Unable to read event receive mask.");
+                        syslog(LOG_ERR,
+                               "[vscpl2drv-tcpiplink] Unable to read "
+                               "event receive mask.");
                     }
                 }
             } else if (0 == strcasecmp(attr[i], "txfilter")) {
@@ -175,14 +180,17 @@ startSetupParser(void *data, const char *name, const char **attr)
                     if (!vscp_readFilterFromString(&pObj->m_txfilter,
                                                    attribute)) {
                         syslog(LOG_ERR,
-                               "Unable to read event transmit filter.");
+                               "[vscpl2drv-tcpiplink] Unable to read "
+                               "event transmit filter.");
                     }
                 }
             } else if (0 == strcasecmp(attr[i], "txmask")) {
                 if (!attribute.empty()) {
                     if (!vscp_readMaskFromString(&pObj->m_txfilter,
                                                  attribute)) {
-                        syslog(LOG_ERR, "Unable to read event transmit mask.");
+                        syslog(LOG_ERR,
+                               "[vscpl2drv-tcpiplink] Unable to read "
+                               "event transmit mask.");
                     }
                 }
             } else if (0 == strcmp(attr[i], "responsetimeout")) {
@@ -197,7 +205,7 @@ startSetupParser(void *data, const char *name, const char **attr)
 }
 
 void
-endSetupParser(void *data, const char *name)
+endSetupParser(void* data, const char* name)
 {
     depth_setup_parser--;
 }
@@ -210,247 +218,124 @@ endSetupParser(void *data, const char *name)
 //
 
 bool
-CTcpipLink::open(const char *pUsername,
-                 const char *pPassword,
-                 const char *pHost,
-                 short port,
-                 const char *pPrefix,
-                 const char *pConfig)
+CTcpipLink::open(std::string& path, const cguid& guid)
 {
-    std::string wxstr = std::string(pConfig);
+    FILE* fp;
 
-    m_usernameLocal = std::string(pUsername);
-    m_passwordLocal = std::string(pPassword);
-    m_hostLocal     = std::string(pHost);
-    m_portLocal     = port;
-    m_prefix        = std::string(pPrefix);
+    // Set GUID
+    m_guid = guid;
 
-    // Parse the configuration string.
-    std::deque<std::string> tokens;
-    vscp_split(tokens, std::string(pConfig), ";");
+    // // Parse the configuration string.
+    // std::deque<std::string> tokens;
+    // vscp_split(tokens, std::string(pConfig), ";");
 
-    // Check for remote host in configuration string
-    if (!tokens.empty()) {
-        // Get remote interface
-        m_hostRemote = tokens.front();
-        tokens.pop_front();
-    }
+    // // Check for remote host in configuration string
+    // if (!tokens.empty()) {
+    //     // Get remote interface
+    //     m_hostRemote = tokens.front();
+    //     tokens.pop_front();
+    // }
 
-    // Check for remote port in configuration string
-    if (!tokens.empty()) {
-        // Get remote port
-        m_portRemote = vscp_readStringValue(tokens.front());
-        tokens.pop_front();
-    }
+    // // Check for remote port in configuration string
+    // if (!tokens.empty()) {
+    //     // Get remote port
+    //     m_portRemote = vscp_readStringValue(tokens.front());
+    //     tokens.pop_front();
+    // }
 
-    // Check for remote user in configuration string
-    if (!tokens.empty()) {
-        // Get remote username
-        m_usernameRemote = tokens.front();
-        tokens.pop_front();
-    }
+    // // Check for remote user in configuration string
+    // if (!tokens.empty()) {
+    //     // Get remote username
+    //     m_usernameRemote = tokens.front();
+    //     tokens.pop_front();
+    // }
 
-    // Check for remote password in configuration string
-    if (!tokens.empty()) {
-        // Get remote password
-        m_passwordRemote = tokens.front();
-        tokens.pop_front();
-    }
+    // // Check for remote password in configuration string
+    // if (!tokens.empty()) {
+    //     // Get remote password
+    //     m_passwordRemote = tokens.front();
+    //     tokens.pop_front();
+    // }
 
-    std::string strRxFilter;
-    // Check for filter in configuration string
-    if (!tokens.empty()) {
-        // Get filter
-        strRxFilter = tokens.front();
-        tokens.pop_front();
-        vscp_readFilterFromString(&m_rxfilter, strRxFilter);
-    }
+    // std::string strRxFilter;
+    // // Check for filter in configuration string
+    // if (!tokens.empty()) {
+    //     // Get filter
+    //     strRxFilter = tokens.front();
+    //     tokens.pop_front();
+    //     vscp_readFilterFromString(&m_rxfilter, strRxFilter);
+    // }
 
-    // Check for mask in configuration string
-    std::string strRxMask;
-    if (!tokens.empty()) {
-        // Get mask
-        strRxMask = tokens.front();
-        tokens.pop_front();
-        vscp_readMaskFromString(&m_rxfilter, strRxMask);
-    }
+    // // Check for mask in configuration string
+    // std::string strRxMask;
+    // if (!tokens.empty()) {
+    //     // Get mask
+    //     strRxMask = tokens.front();
+    //     tokens.pop_front();
+    //     vscp_readMaskFromString(&m_rxfilter, strRxMask);
+    // }
 
-    std::string strTxFilter;
-    // Check for filter in configuration string
-    if (!tokens.empty()) {
-        // Get filter
-        strTxFilter = tokens.front();
-        tokens.pop_front();
-        vscp_readFilterFromString(&m_txfilter, strTxFilter);
-    }
+    // std::string strTxFilter;
+    // // Check for filter in configuration string
+    // if (!tokens.empty()) {
+    //     // Get filter
+    //     strTxFilter = tokens.front();
+    //     tokens.pop_front();
+    //     vscp_readFilterFromString(&m_txfilter, strTxFilter);
+    // }
 
-    // Check for mask in configuration string
-    std::string strTxMask;
-    if (!tokens.empty()) {
-        // Get mask
-        strTxMask = tokens.front();
-        tokens.pop_front();
-        vscp_readMaskFromString(&m_txfilter, strTxMask);
-    }
+    // // Check for mask in configuration string
+    // std::string strTxMask;
+    // if (!tokens.empty()) {
+    //     // Get mask
+    //     strTxMask = tokens.front();
+    //     tokens.pop_front();
+    //     vscp_readMaskFromString(&m_txfilter, strTxMask);
+    // }
 
-    // Check for response timout in configuration string
-    std::string strResponseTimout;
-    if (!tokens.empty()) {
-        // Get response timout
-        strResponseTimout = tokens.front();
-        tokens.pop_front();
-        m_responseTimeout = vscp_readStringValue(strResponseTimout);
-    }
+    // // Check for response timout in configuration string
+    // std::string strResponseTimout;
+    // if (!tokens.empty()) {
+    //     // Get response timout
+    //     strResponseTimout = tokens.front();
+    //     tokens.pop_front();
+    //     m_responseTimeout = vscp_readStringValue(strResponseTimout);
+    // }
 
-    // First log on to the host and get configuration
-    // variables
-
-    if (VSCP_ERROR_SUCCESS !=
-        m_srvLocal.doCmdOpen(
-          m_hostLocal, port, m_usernameLocal, m_passwordLocal)) {
+    // Read configuration file
+    fp = fopen(path.c_str(), "r");
+    if (NULL == fp) {
         syslog(LOG_ERR,
-               "%s %s ",
-               VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-               (const char *)"Unable to connect to local VSCP TCP/IP "
-                             "interface. Terminating!");
+               "[vscpl2drv-automation] Failed to open configuration file [%s]",
+               path.c_str());
         return false;
     }
 
-    // Find the channel id
-    uint32_t ChannelID;
-    m_srvLocal.doCmdGetChannelID(&ChannelID);
+    XML_Parser xmlParser = XML_ParserCreate("UTF-8");
+    XML_SetUserData(xmlParser, this);
+    XML_SetElementHandler(xmlParser, startSetupParser, endSetupParser);
 
-    // The server should hold configuration data
-    //
-    // We look for
-    //
-    //   _host_remote       - The remote host to which we should connect
-    //
-    //   _port_remote       - The port to connect to at the remote host.
-    //
-    //   _user_remote       - Username to login at remote host
-    //
-    //   _password_remote   - Username to login at remote host
-    //
-    //   _filter (_rxfiter)- Standard VSCP filter in string form for receive-
-    //             1,0x0000,0x0006,
-    //                 ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00
-    //              as priority,class,type,GUID
-    //              Used to filter what events that is received from
-    //              the socketcan interface. If not give all events
-    //              are received.
-    //
-    //  _mask (_rxmask)- Standard VSCP mask in string form for receive.
-    //              1,0x0000,0x0006,
-    //                 ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00
-    //              as priority,class,type,GUID
-    //              Used to filter what events that is received from
-    //              the socketcan interface. If not give all events
-    //              are received.
-    //
-    // _responsetimeout - The time in milliseconds we should wait for a response
-    //                      from the remote server
-    //
-    //
+    void* buf = XML_GetBuffer(xmlParser, XML_BUFF_SIZE);
 
-    std::string str;
-    std::string strName = m_prefix + std::string("_host_remote");
-    m_srvLocal.getRemoteVariableValue(strName, m_hostRemote);
+    size_t file_size = 0;
+    file_size = fread(buf, sizeof(char), XML_BUFF_SIZE, fp);
 
-    strName = m_prefix + std::string("_port_remote");
-    m_srvLocal.getRemoteVariableInt(strName, &m_portRemote);
-
-    strName = m_prefix + std::string("_user_remote");
-    m_srvLocal.getRemoteVariableValue(strName, m_usernameRemote);
-
-    strName = m_prefix + std::string("_password_remote");
-    m_srvLocal.getRemoteVariableValue(strName, m_passwordRemote);
-
-    // Old format
-    strName = m_prefix + std::string("_filter");
-    if (VSCP_ERROR_SUCCESS == m_srvLocal.getRemoteVariableValue(strName, str)) {
-        vscp_readFilterFromString(&m_rxfilter, str);
+    if (!XML_ParseBuffer(xmlParser, file_size, file_size == 0)) {
+        syslog(LOG_ERR, "[vscpl2drv-tcpiplink] Failed parse XML setup.");
     }
 
-    strName = m_prefix + std::string("_mask");
-    if (VSCP_ERROR_SUCCESS == m_srvLocal.getRemoteVariableValue(strName, str)) {
-        vscp_readMaskFromString(&m_rxfilter, str);
-    }
-
-    //  New format
-    strName = m_prefix + std::string("_rxfilter");
-    if (VSCP_ERROR_SUCCESS == m_srvLocal.getRemoteVariableValue(strName, str)) {
-        vscp_readFilterFromString(&m_rxfilter, str);
-    }
-
-    strName = m_prefix + std::string("_rxmask");
-    if (VSCP_ERROR_SUCCESS == m_srvLocal.getRemoteVariableValue(strName, str)) {
-        vscp_readMaskFromString(&m_rxfilter, str);
-    }
-
-    strName = m_prefix + std::string("_txfilter");
-    if (VSCP_ERROR_SUCCESS == m_srvLocal.getRemoteVariableValue(strName, str)) {
-        vscp_readFilterFromString(&m_txfilter, str);
-    }
-
-    strName = m_prefix + std::string("_txmask");
-    if (VSCP_ERROR_SUCCESS == m_srvLocal.getRemoteVariableValue(strName, str)) {
-        vscp_readMaskFromString(&m_txfilter, str);
-    }
-
-    strName = m_prefix + std::string("_response_timout");
-    if (VSCP_ERROR_SUCCESS == m_srvLocal.getRemoteVariableValue(strName, str)) {
-        m_responseTimeout = vscp_readStringValue(str);
-    }
-
-    /////////////////////////////////////////////////////////////
-    //                    XML Configuration
-    /////////////////////////////////////////////////////////////
-
-    std::string setupXml;
-    strName = m_prefix + std::string("_setup");
-    if (VSCP_ERROR_SUCCESS !=
-        m_srvLocal.getRemoteVariableValue(strName, setupXml)) {
-        // Not here, we use empty mock-up
-        setupXml = "<?xml version = \"1.0\" encoding = \"UTF-8\" "
-                   "?><setup><!-- empty --></setup>";
-    }
-
-    // XML setup
-    std::string strSetupXML;
-    strName = m_prefix + std::string("_setup");
-    if (VSCP_ERROR_SUCCESS ==
-        m_srvLocal.getRemoteVariableValue(strName, strSetupXML, true)) {
-        XML_Parser xmlParser = XML_ParserCreate("UTF-8");
-        XML_SetUserData(xmlParser, this);
-        XML_SetElementHandler(xmlParser, startSetupParser, endSetupParser);
-
-        int bytes_read;
-        void *buff = XML_GetBuffer(xmlParser, XML_BUFF_SIZE);
-
-        strncpy((char *)buff, strSetupXML.c_str(), strSetupXML.length());
-
-        bytes_read = strSetupXML.length();
-        if (!XML_ParseBuffer(xmlParser, bytes_read, bytes_read == 0)) {
-            syslog(LOG_ERR, "Failed parse XML setup.");
-        }
-
-        XML_ParserFree(xmlParser);
-    }
-
-    // Close the channel
-    m_srvLocal.doCmdClose();
+    XML_ParserFree(xmlParser);
 
     // start the workerthread
     if (pthread_create(m_pthreadSend, NULL, workerThreadSend, this)) {
-
-        syslog(LOG_ERR, "Unable to start send worker thread.");
+        syslog(LOG_ERR,
+               "[vscpl2drv-tcpiplink] Unable to start send worker thread.");
         return false;
     }
 
     if (pthread_create(m_pthreadReceive, NULL, workerThreadReceive, this)) {
-
-        syslog(LOG_ERR, "Unable to start receive worker thread.");
+        syslog(LOG_ERR,
+               "[vscpl2drv-tcpiplink] Unable to start receive worker thread.");
         return false;
     }
 
@@ -465,7 +350,8 @@ void
 CTcpipLink::close(void)
 {
     // Do nothing if already terminated
-    if (m_bQuit) return;
+    if (m_bQuit)
+        return;
 
     m_bQuit = true; // terminate the thread
     sleep(1);       // Give the thread some time to terminate
@@ -476,10 +362,10 @@ CTcpipLink::close(void)
 //
 
 bool
-CTcpipLink::addEvent2SendQueue(const vscpEvent *pEvent)
+CTcpipLink::addEvent2SendQueue(const vscpEvent* pEvent)
 {
     pthread_mutex_lock(&m_mutexSendQueue);
-    m_sendList.push_back((vscpEvent *)pEvent);
+    m_sendList.push_back((vscpEvent*)pEvent);
     sem_post(&m_semSendQueue);
     pthread_mutex_lock(&m_mutexSendQueue);
     return true;
@@ -489,13 +375,14 @@ CTcpipLink::addEvent2SendQueue(const vscpEvent *pEvent)
 // Send worker thread
 //
 
-void *
-workerThreadSend(void *pData)
+void*
+workerThreadSend(void* pData)
 {
     bool bRemoteConnectionLost = false;
 
-    CTcpipLink *pObj = (CTcpipLink *)pData;
-    if (NULL == pObj) return NULL;
+    CTcpipLink* pObj = (CTcpipLink*)pData;
+    if (NULL == pObj)
+        return NULL;
 
 retry_send_connect:
 
@@ -508,14 +395,15 @@ retry_send_connect:
         syslog(LOG_ERR,
                "%s %s ",
                VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-               (const char *)"Error while opening remote VSCP TCP/IP "
-                             "interface. Terminating!");
+               (const char*)"Error while opening remote VSCP TCP/IP "
+                            "interface. Terminating!");
 
         // Give the server some time to become active
         for (int loopcnt = 0; loopcnt < VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME;
              loopcnt++) {
             sleep(1);
-            if (pObj->m_bQuit) return NULL;
+            if (pObj->m_bQuit)
+                return NULL;
         }
 
         goto retry_send_connect;
@@ -524,7 +412,7 @@ retry_send_connect:
     syslog(LOG_ERR,
            "%s %s ",
            VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-           (const char *)"Connect to remote VSCP TCP/IP interface [SEND].");
+           (const char*)"Connect to remote VSCP TCP/IP interface [SEND].");
 
     // Find the channel id
     pObj->m_srvRemote.doCmdGetChannelID(&pObj->txChannelID);
@@ -540,7 +428,7 @@ retry_send_connect:
                 syslog(LOG_ERR,
                        "%s %s ",
                        VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-                       (const char *)"Lost connection to remote host [SEND].");
+                       (const char*)"Lost connection to remote host [SEND].");
             }
 
             // Wait before we try to connect again
@@ -554,7 +442,7 @@ retry_send_connect:
                 syslog(LOG_ERR,
                        "%s %s ",
                        VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-                       (const char *)"Reconnected to remote host [SEND].");
+                       (const char*)"Reconnected to remote host [SEND].");
 
                 // Find the channel id
                 pObj->m_srvRemote.doCmdGetChannelID(&pObj->txChannelID);
@@ -575,7 +463,7 @@ retry_send_connect:
 
             // Yes there are data to send
             pthread_mutex_lock(&pObj->m_mutexSendQueue);
-            vscpEvent *pEvent = pObj->m_sendList.front();
+            vscpEvent* pEvent = pObj->m_sendList.front();
             // Check if event should be filtered away
             if (!vscp_doLevel2Filter(pEvent, &pObj->m_txfilter)) {
                 pthread_mutex_unlock(&pObj->m_mutexSendQueue);
@@ -584,7 +472,8 @@ retry_send_connect:
             pObj->m_sendList.pop_front();
             pthread_mutex_lock(&pObj->m_mutexSendQueue);
 
-            if (NULL == pEvent) continue;
+            if (NULL == pEvent)
+                continue;
 
             // Yes there are data to send
             // Send it out to the remote server
@@ -597,11 +486,10 @@ retry_send_connect:
     // Close the channel
     pObj->m_srvRemote.doCmdClose();
 
-    syslog(
-      LOG_ERR,
-      "%s %s ",
-      VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-      (const char *)"Disconnect from remote VSCP TCP/IP interface [SEND].");
+    syslog(LOG_ERR,
+           "%s %s ",
+           VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
+           (const char*)"Disconnect from remote VSCP TCP/IP interface [SEND].");
 
     return NULL;
 }
@@ -610,14 +498,15 @@ retry_send_connect:
 //                Workerthread Receive - CWrkReceiveTread
 //////////////////////////////////////////////////////////////////////
 
-void *
-workerThreadReceive(void *pData)
+void*
+workerThreadReceive(void* pData)
 {
     bool bRemoteConnectionLost = false;
-    __attribute__((unused)) bool bActivity             = false;
+    __attribute__((unused)) bool bActivity = false;
 
-    CTcpipLink *pObj = (CTcpipLink *)pData;
-    if (NULL == pObj) return NULL;
+    CTcpipLink* pObj = (CTcpipLink*)pData;
+    if (NULL == pObj)
+        return NULL;
 
 retry_receive_connect:
 
@@ -630,14 +519,15 @@ retry_receive_connect:
         syslog(LOG_ERR,
                "%s %s ",
                VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-               (const char *)"Error while opening remote VSCP TCP/IP "
-                             "interface. Terminating!");
+               (const char*)"Error while opening remote VSCP TCP/IP "
+                            "interface. Terminating!");
 
         // Give the server some time to become active
         for (int loopcnt = 0; loopcnt < VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME;
              loopcnt++) {
             sleep(1);
-            if (pObj->m_bQuit) return NULL;
+            if (pObj->m_bQuit)
+                return NULL;
         }
 
         goto retry_receive_connect;
@@ -646,7 +536,7 @@ retry_receive_connect:
     syslog(LOG_ERR,
            "%s %s ",
            VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-           (const char *)"Connect to remote VSCP TCP/IP interface [RECEIVE].");
+           (const char*)"Connect to remote VSCP TCP/IP interface [RECEIVE].");
 
     // Set receive filter
     if (VSCP_ERROR_SUCCESS !=
@@ -654,7 +544,7 @@ retry_receive_connect:
         syslog(LOG_ERR,
                "%s %s ",
                VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-               (const char *)"Failed to set receiving filter.");
+               (const char*)"Failed to set receiving filter.");
     }
 
     // Enter the receive loop
@@ -676,7 +566,7 @@ retry_receive_connect:
                   LOG_ERR,
                   "%s %s ",
                   VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-                  (const char *)"Lost connection to remote host [Receive].");
+                  (const char*)"Lost connection to remote host [Receive].");
             }
 
             // Wait before we try to connect again
@@ -690,7 +580,7 @@ retry_receive_connect:
                 syslog(LOG_ERR,
                        "%s %s ",
                        VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-                       (const char *)"Reconnected to remote host [Receive].");
+                       (const char*)"Reconnected to remote host [Receive].");
                 bRemoteConnectionLost = false;
             }
 
@@ -701,11 +591,11 @@ retry_receive_connect:
         }
 
         // Check if remote server has something to send to us
-        vscpEvent *pEvent = new vscpEvent;
+        vscpEvent* pEvent = new vscpEvent;
         if (NULL != pEvent) {
 
             pEvent->sizeData = 0;
-            pEvent->pdata    = NULL;
+            pEvent->pdata = NULL;
 
             if (CANAL_ERROR_SUCCESS ==
                 pObj->m_srvRemote.doCmdBlockingReceive(pEvent)) {
@@ -734,7 +624,7 @@ retry_receive_connect:
       LOG_ERR,
       "%s %s ",
       VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-      (const char *)"Disconnect from remote VSCP TCP/IP interface [RECEIVE].");
+      (const char*)"Disconnect from remote VSCP TCP/IP interface [RECEIVE].");
 
     return NULL;
 }

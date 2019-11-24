@@ -46,7 +46,7 @@
 // Seconds before trying to reconnect to a broken connection
 #define VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME 30
 
-#define VSCP_TCPIPLINK_SYSLOG_DRIVER_ID "VSCP tcpip-link driver:"
+#define VSCP_TCPIPLINK_SYSLOG_DRIVER_ID "[vscpl2drv-tcpiplink] "
 #define VSCP_LEVEL2_DLL_LOGGER_OBJ_MUTEX                                       \
     "___VSCP__DLL_L2TCPIPLINK_OBJ_MUTEX____"
 #define VSCP_SOCKETCAN_LIST_MAX_MSG 2048
@@ -70,12 +70,7 @@ class CTcpipLink
         Open
         @return True on success.
      */
-    bool open(const char *pUsername,
-              const char *pPassword,
-              const char *pHost,
-              short port,
-              const char *pPrefix,
-              const char *pConfig);
+    bool open(std::string& path, const cguid& guid);
 
     /*!
         Flush and close the log file
@@ -91,17 +86,8 @@ class CTcpipLink
     /// Run flag
     bool m_bQuit;
 
-    /// server supplied host
-    std::string m_hostLocal;
-
-    /// Server supplied port
-    short m_portLocal;
-
-    /// Server supplied username
-    std::string m_usernameLocal;
-
-    /// Server supplied password
-    std::string m_passwordLocal;
+    // Our GUID
+    cguid m_guid;
 
     /// server supplied host
     std::string m_hostRemote;
@@ -114,9 +100,6 @@ class CTcpipLink
 
     /// Server supplied password
     std::string m_passwordRemote;
-
-    /// server supplied prefix
-    std::string m_prefix;
 
     /// Send channel id
     uint32_t txChannelID;
@@ -133,9 +116,6 @@ class CTcpipLink
     /// Worker threads
     pthread_t *m_pthreadSend;
     pthread_t *m_pthreadReceive;
-
-    /// VSCP local server interface
-    VscpRemoteTcpIf m_srvLocal;
 
     /// VSCP remote server interface
     VscpRemoteTcpIf m_srvRemote;
