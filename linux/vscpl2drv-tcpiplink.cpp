@@ -33,8 +33,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <vscp.h>
+#include <hlo.h>
+
 #include "vscpl2drv-tcpiplink.h"
-#include "vscptcpiplink.h"
+#include "tcpiplink.h"
 
 void
 _init() __attribute__((constructor));

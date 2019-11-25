@@ -78,9 +78,19 @@ class CTcpipLink
     void close(void);
 
     /*!
+      Parse HLO object
+    */
+    bool parseHLO(uint16_t size, uint8_t* inbuf, CHLO* phlo);
+
+    /*!
+      Handle high level object
+    */
+    bool handleHLO(vscpEvent* pEvent);
+
+    /*!
         Add event to send queue
      */
-    bool addEvent2SendQueue(const vscpEvent *pEvent);
+    bool addEvent2SendQueue(const vscpEvent* pEvent);
 
   public:
     /// Run flag
@@ -114,15 +124,15 @@ class CTcpipLink
     uint32_t m_responseTimeout;
 
     /// Worker threads
-    pthread_t *m_pthreadSend;
-    pthread_t *m_pthreadReceive;
+    pthread_t* m_pthreadSend;
+    pthread_t* m_pthreadReceive;
 
     /// VSCP remote server interface
     VscpRemoteTcpIf m_srvRemote;
 
     // Queue
-    std::list<vscpEvent *> m_sendList;
-    std::list<vscpEvent *> m_receiveList;
+    std::list<vscpEvent*> m_sendList;
+    std::list<vscpEvent*> m_receiveList;
 
     /*!
         Event object to indicate that there is an event in the output queue

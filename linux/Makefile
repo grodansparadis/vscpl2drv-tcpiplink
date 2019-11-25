@@ -67,9 +67,8 @@ LIB_SONAME = "vscpl2drv-tcpiplink.so.$(MAJOR_VERSION)"
 
 ### Variables: ###
 
-
 VSCPTCPIP_OBJECTS = vscpl2drv-tcpiplink.o\
-	vscptcpiplink.o\
+	tcpiplink.o\
 	vscpremotetcpif.o\
 	vscphelper.o\
 	vscpdatetime.o\
@@ -94,8 +93,8 @@ $(LIB_PLUS_VER): $(VSCPTCPIP_OBJECTS)
 	$(CXX) -o $@ $(VSCPTCPIP_OBJECTS) $(DLFLAGS)  $(EXTRALIBS) 
 	ar rcs libvscpl2drv-tcpiplink.a $(VSCPTCPIP_OBJECTS)
 
-vscptcpiplink.o: vscptcpiplink.cpp vscptcpiplink.h
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c vscptcpiplink.cpp -o $@
+tcpiplink.o: tcpiplink.cpp tcpiplink.h
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c tcpiplink.cpp -o $@
 
 vscphelperlib.o: ../../../../vscphelperlib.cpp ../../../../vscphelperlib.h
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c ../../../../vscphelperlib.cpp -o $@
@@ -142,7 +141,7 @@ install: all
 	$(INSTALL_PROGRAM) $(LIB_PLUS_VER) $(DESTDIR)$(libdir)
 	ln -fs $(libdir)/$(LIB_PLUS_VER) $(DESTDIR)$(libdir)/vscpl2drv-tcpiplink.so
 	ln -fs $(libdir)/$(LIB_PLUS_VER) $(DESTDIR)$(libdir)/vscpl2drv-tcpiplink.so.$(MAJOR_VERSION)
-	ln -fs $(libdir)/$(LIB_PLUS_VER) $(DESTDIR)$(libdir)/vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION
+	ln -fs $(libdir)/$(LIB_PLUS_VER) $(DESTDIR)$(libdir)/vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION)
 	$(INSTALL_PROGRAM) vscpl2drv-tcpiplink.a $(DESTDIR)$(libdir)
 
 uninstall: 

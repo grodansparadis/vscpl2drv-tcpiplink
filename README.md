@@ -6,8 +6,9 @@
     Driver Linux: vscpl2drv-tcpiplink.so
     Driver Windows: vscpl2drv-tcpiplink.dll
 
-A driver that send/receive events to/from a remote VSCP tcp/ip interface with automatic reconnection and security.
+The tcp/ip driver can send/receive events to/from a remote VSCP tcp/ip interface with automatic reconnection and security. The remote node is notmally a high level VSCP hardware device ir a VSCP daemon.
 
+The driver will try to hold a connection open even if the remote node disconnects. This makes it possible to replace a node or take it down for maintenance and still have the link online again as soon as the node is powered up. 
 
 
 ## Install the driver on Linux
@@ -17,7 +18,7 @@ You can install the driver using the debian package with
 
 the driver will be installed to /usr/lib
 
-After installing the driver you need to add it to the vscpd.conf file (/etc/vscp/vscpd.conf). Se the *configuration* section above.
+After installing the driver you need to add it to the vscpd.conf file (/etc/vscp/vscpd.conf). Se the *configuration* section below.
 
 You also need to set up a configuration file for the driver. If you don't need to dynamically edit the content of this file a good and safe location for it is in the */etc/vscp/* folder alongside the VSCP daemon configuration file.
 
@@ -48,7 +49,7 @@ make
 make install
 ```
 
-Default install folder is */usr/local/lib* when you build manually
+Default install folder when you build from source is */usr/local/lib*. You can change this with the --prefix option in the configure step. For example *--prefix /usr* to install to */usr/lib* as the debian install
 
 You need build-essentials and git installed on your system
 

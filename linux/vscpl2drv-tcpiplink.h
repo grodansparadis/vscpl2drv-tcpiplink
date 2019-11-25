@@ -37,8 +37,10 @@
 #include <canal.h>
 #include <vscpremotetcpif.h>
 #include <canal_macro.h>
+#include <vscp.h>
+#include <hlo.h>
 
-#include "vscptcpiplink.h"
+#include "tcpiplink.h"
 
 #ifndef BOOL
 typedef int BOOL;
