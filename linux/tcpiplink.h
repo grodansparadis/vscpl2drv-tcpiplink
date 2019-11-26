@@ -51,6 +51,10 @@
     "___VSCP__DLL_L2TCPIPLINK_OBJ_MUTEX____"
 #define VSCP_SOCKETCAN_LIST_MAX_MSG 2048
 
+// Module Local HLO op's
+#define HLO_OP_LOCAL_CONNECT      HLO_OP_USER_DEFINED + 0
+#define HLO_OP_LOCAL_DISCONNECT   HLO_OP_USER_DEFINED + 1
+
 // Forward declarations
 class CWrkSendTread;
 class CWrkReceiveTread;
@@ -88,6 +92,25 @@ class CTcpipLink
     bool handleHLO(vscpEvent* pEvent);
 
     /*!
+      Load configuration if allowed to do so
+    */
+    bool doLoadConfig(void);
+
+    /*!
+      Save configuration if allowed to do so
+    */
+    bool doSaveConfig(void);
+
+    /*!
+        Put event on receive queue and signal
+        that a new event is available
+
+        @param ex Event to send
+        @return true on success, false on failure
+    */
+    bool eventExToReceiveQueue(vscpEventEx& ex);
+
+    /*!
         Add event to send queue
      */
     bool addEvent2SendQueue(const vscpEvent* pEvent);
@@ -98,6 +121,9 @@ class CTcpipLink
 
     // Our GUID
     cguid m_guid;
+
+    // Path to configuration file
+    std::string m_path;
 
     /// server supplied host
     std::string m_hostRemote;

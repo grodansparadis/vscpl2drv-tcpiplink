@@ -303,12 +303,4 @@ VSCPGetVersion(void)
     return ver;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// VSCPGetVendorString
-//
 
-extern "C" const char*
-VSCPGetVendorString(void)
-{
-    return VSCP_DLL_VENDOR;
-}

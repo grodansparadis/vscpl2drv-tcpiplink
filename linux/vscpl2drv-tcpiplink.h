@@ -54,21 +54,6 @@ typedef int BOOL;
 #define FALSE 0
 #endif
 
-#define VSCP_DLL_SONAME "vscpl2drv_tcpipink.1.2"
-
-// This is the version info for this DLL - Change to your own value
-#define VSCP_DLL_VERSION        0x000002
-
-// This is the vendor string - Change to your own value
-#define VSCP_DLL_VENDOR "Grodans Paradis AB, Sweden, https://www.grodansparadis.com"
-
-// Driver information.
-#define VSCP_TCPIPLINK_DRIVERINFO "<?xml version = \"1.0\" encoding = \"UTF-8\" ?>" \
-"<!-- Version 0.0.1    2013-05-11   -->" \
-"<config level=\"1|2\"blocking\"true|false\" description=\"bla bla bla bla\">" \
-"   <item pos=\"0\" type=\"string\" description\"Serial number for Tellstick\"/>" \
-"   <item pos=\"1\" type=\"path\" description\"Path to configuration file\"/>" \
-"</config>"
 
 /*!
     Add a driver object

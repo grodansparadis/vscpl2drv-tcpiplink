@@ -54,7 +54,6 @@
                     "/usr/include/x86_64-linux-gnu",
                     "/usr/include",
                     "/usr/local/include",
-                    "${workspaceRoot}",
                     "${workspaceFolder}/common",
                     "${workspaceFolder}/vscp/src/common",
                     "${workspaceFolder}/vscp/src/vscp/common",
