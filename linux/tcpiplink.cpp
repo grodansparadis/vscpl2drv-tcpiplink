@@ -625,7 +625,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                         "remote-host",
                         "OK",
                         VSCP_REMOTE_VARIABLE_CODE_STRING,
-                        vscp_convertToBASE64(m_hostRemote).c_str());
+                        vscp_convertToBase64(m_hostRemote).c_str());
             } else if ("REMOTE-PORT" == hlo.m_name) {
                 char ibuf[80];
                 sprintf(ibuf, "%d", m_portRemote);
@@ -634,21 +634,21 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                         "remote-port",
                         "OK",
                         VSCP_REMOTE_VARIABLE_CODE_INTEGER,
-                        vscp_convertToBASE64(ibuf).c_str());
+                        vscp_convertToBase64(ibuf).c_str());
             } else if ("REMOTE-USER" == hlo.m_name) {
                 sprintf(buf,
                         HLO_READ_VAR_REPLY_TEMPLATE,
                         "remote-user",
                         "OK",
                         VSCP_REMOTE_VARIABLE_CODE_INTEGER,
-                        vscp_convertToBASE64(m_usernameRemote).c_str());
+                        vscp_convertToBase64(m_usernameRemote).c_str());
             } else if ("REMOTE-PASSWORD" == hlo.m_name) {
                 sprintf(buf,
                         HLO_READ_VAR_REPLY_TEMPLATE,
                         "remote-password",
                         "OK",
                         VSCP_REMOTE_VARIABLE_CODE_INTEGER,
-                        vscp_convertToBASE64(m_passwordRemote).c_str());
+                        vscp_convertToBase64(m_passwordRemote).c_str());
             } else if ("TIMEOUT-RESPONSE" == hlo.m_name) {
                 char ibuf[80];
                 sprintf(ibuf, "%lu", (long unsigned int)m_responseTimeout);
@@ -657,7 +657,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                         "timeout-response",
                         "OK",
                         VSCP_REMOTE_VARIABLE_CODE_LONG,
-                        vscp_convertToBASE64(ibuf).c_str());
+                        vscp_convertToBase64(ibuf).c_str());
             }
             break;
 
@@ -677,7 +677,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                             "enable-sunrise",
                             "OK",
                             VSCP_REMOTE_VARIABLE_CODE_STRING,
-                            vscp_convertToBASE64(m_hostRemote).c_str());
+                            vscp_convertToBase64(m_hostRemote).c_str());
                 }
             } else if ("REMOTE-PORT" == hlo.m_name) {
                 if (VSCP_REMOTE_VARIABLE_CODE_INTEGER != hlo.m_varType) {
@@ -696,7 +696,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                             "remote-port",
                             "OK",
                             VSCP_REMOTE_VARIABLE_CODE_INTEGER,
-                            vscp_convertToBASE64(ibuf).c_str());
+                            vscp_convertToBase64(ibuf).c_str());
                 }
             } else if ("REMOTE-USER" == hlo.m_name) {
                 if (VSCP_REMOTE_VARIABLE_CODE_STRING != hlo.m_varType) {
@@ -713,7 +713,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                             "remote-user",
                             "OK",
                             VSCP_REMOTE_VARIABLE_CODE_STRING,
-                            vscp_convertToBASE64(m_usernameRemote).c_str());
+                            vscp_convertToBase64(m_usernameRemote).c_str());
                 }
             } else if ("REMOTE-PASSWORD" == hlo.m_name) {
                 if (VSCP_REMOTE_VARIABLE_CODE_STRING != hlo.m_varType) {
@@ -730,7 +730,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                             "remote-password!",
                             "OK",
                             VSCP_REMOTE_VARIABLE_CODE_STRING,
-                            vscp_convertToBASE64(m_passwordRemote).c_str());
+                            vscp_convertToBase64(m_passwordRemote).c_str());
                 }
             } else if ("TIMEOUT-RESPONSE¤" == hlo.m_name) {
                 if (VSCP_REMOTE_VARIABLE_CODE_INTEGER != hlo.m_varType) {
@@ -749,7 +749,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
                             "timeout-response",
                             "OK",
                             VSCP_REMOTE_VARIABLE_CODE_UINT32,
-                            vscp_convertToBASE64(ibuf).c_str());
+                            vscp_convertToBase64(ibuf).c_str());
                 }
             }
             break;
@@ -787,10 +787,10 @@ bool
 CTcpipLink::eventExToReceiveQueue(vscpEventEx& ex)
 {
     vscpEvent* pev = new vscpEvent();
-    if (!vscp_convertVSCPfromEx(pev, &ex)) {
+    if (!vscp_convertEventExToEvent(pev, &ex)) {
         syslog(LOG_ERR,
                "[vscpl2drv-tcpiplink] Failed to convert event from ex to ev.");
-        vscp_deleteVSCPevent(pev);
+        vscp_deleteEvent(pev);
         return false;
     }
     if (NULL != pev) {
@@ -800,7 +800,7 @@ CTcpipLink::eventExToReceiveQueue(vscpEventEx& ex)
             sem_post(&m_semReceiveQueue);
             pthread_mutex_unlock(&m_mutexReceiveQueue);
         } else {
-            vscp_deleteVSCPevent(pev);
+            vscp_deleteEvent(pev);
         }
     } else {
         syslog(LOG_ERR,
@@ -937,7 +937,7 @@ retry_send_connect:
             // Send it out to the remote server
 
             pObj->m_srvRemote.doCmdSend(pEvent);
-            vscp_deleteVSCPevent_v2(&pEvent);
+            vscp_deleteEvent_v2(&pEvent);
         }
     }
 
@@ -1066,11 +1066,11 @@ retry_receive_connect:
                     sem_post(&pObj->m_semReceiveQueue);
                     pthread_mutex_unlock(&pObj->m_mutexReceiveQueue);
                 } else {
-                    vscp_deleteVSCPevent(pEvent);
+                    vscp_deleteEvent(pEvent);
                 }
 
             } else {
-                vscp_deleteVSCPevent(pEvent);
+                vscp_deleteEvent(pEvent);
             }
         }
     }
