@@ -1,6 +1,6 @@
 % vscpl2drv-tcpiplink(1) VSCP Level II Logger Driver
 % Åke Hedmann, Grodans Paradis AB
-% September 28, 2019
+% January 02, 2020
 
 # NAME
 
