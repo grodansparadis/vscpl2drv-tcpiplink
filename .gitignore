@@ -35,3 +35,8 @@ linux/test
 
 # Dist folder
 dist/
+
+# misc
+autom4te.cache/
+config.log
+config.status

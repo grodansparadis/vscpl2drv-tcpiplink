@@ -35,13 +35,13 @@ WARNINGS = -Wall
 VERSION_DEFS = -DMAJOR_VERSION=$(MAJOR_VERSION) -DMINOR_VERSION=$(MINOR_VERSION) \
 	-DRELEASE_VERSION=$(RELEASE_VERSION) -DBUILD_VERSION=$(BUILD_VERSION)
 
-CFLAGS = -std=c99  -DOPENSSL_API_1_1 ${WARNINGS} -fPIC -DCBC -I.. -I../common \
+CFLAGS = -std=c99  -g -O0 -DOPENSSL_API_1_1 ${WARNINGS} -fPIC -DCBC -I.. -I../common \
 	-I../vscp/src/common -I../vscp/src/vscp/common $(VERSION_DEFS)
-CXXFLAGS = -std=c++11 ${WARNINGS} -D__LINUX__ -fPIC -D_REENTRANT 
+CXXFLAGS = -std=c++11 ${WARNINGS} -D__LINUX__ -fPIC -D_REENTRANT  -g -O0
 CPPFLAGS = -D__LINUX__ -fPIC  ${WARNINGS} -fno-var-tracking-assignments \
     -I.. -I@include@ -I../common \
 	-I../vscp/src/common -I../vscp/src/vscp/common \
-	-I../vscp/src/common/nlohmann \
+	-I../vscp/src/common/third_party/nlohmann \
 	$(VERSION_DEFS)
 
 LDFLAGS = 

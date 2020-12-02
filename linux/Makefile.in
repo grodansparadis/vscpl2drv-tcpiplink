@@ -41,7 +41,7 @@ CXXFLAGS = -std=c++11 ${WARNINGS} -D__LINUX__ -fPIC -D_REENTRANT @CXXFLAGS@
 CPPFLAGS = -D__LINUX__ -fPIC @CPPFLAGS@ ${WARNINGS} -fno-var-tracking-assignments \
     -I@top_srcdir@ -I@include@ -I../common \
 	-I../vscp/src/common -I../vscp/src/vscp/common \
-	-I../vscp/src/common/nlohmann \
+	-I../vscp/src/common/third_party/nlohmann \
 	$(VERSION_DEFS)
 
 LDFLAGS = @LDFLAGS@

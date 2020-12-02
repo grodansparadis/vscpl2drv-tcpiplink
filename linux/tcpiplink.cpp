@@ -598,7 +598,7 @@ CTcpipLink::handleHLO(vscpEvent* pEvent)
     ex.timestamp = vscp_makeTimeStamp();
     vscp_setEventExToNow(&ex); // Set time to current time
     ex.vscp_class = VSCP_CLASS2_PROTOCOL;
-    ex.vscp_type = VSCP2_TYPE_PROTOCOL_HIGH_LEVEL_OBJECT;
+    ex.vscp_type = VSCP2_TYPE_HLO_COMMAND;
     m_guid.writeGUID(ex.GUID);
 
     switch (hlo.m_op) {
@@ -926,7 +926,7 @@ retry_send_connect:
 
             // Only HLO object event is of interst to us
             if ((VSCP_CLASS2_PROTOCOL == pEvent->vscp_class) &&
-                (VSCP2_TYPE_PROTOCOL_HIGH_LEVEL_OBJECT == pEvent->vscp_type)) {
+                (VSCP2_TYPE_HLO_COMMAND == pEvent->vscp_type)) {
                 pObj->handleHLO(pEvent);
             }
 
