@@ -85,7 +85,7 @@ VSCPTCPIP_OBJECTS = vscpl2drv-tcpiplink.o\
 
 ### Targets: ###
 
-all: $(LIB_PLUS_VER) man test
+all: $(LIB_PLUS_VER) test
 
 test:  test.o $(PROJOBJS)
 	$(CXX) -o $@ test.o $(PROJOBJS) $(LDFLAGS)  $(EXTRALIBS)
@@ -155,9 +155,9 @@ uninstall:
 
 install-strip: install
 
-man: ../man/vscpl2drv-tcpiplink.3.md
-	pandoc -s -t man ../man/vscpl2drv-tcpiplink.3.md -o ../man/vscpl2drv-tcpiplink.3
-	tar -zcf ../man/vscpl2drv-tcpiplink.3.gz ../man/vscpl2drv-tcpiplink.3
+man: ../man/vscpl2drv-tcpiplink.1.md
+	pandoc -s -t man ../man/vscpl2drv-tcpiplink.1.md -o ../man/vscpl2drv-tcpiplink.1
+	tar -zcf ../man/vscpl2drv-tcpiplink.1.gz ../man/vscpl2drv-tcpiplink.1
 
 clean: 
 	rm -rf ./.deps ./.pch
@@ -171,8 +171,6 @@ clean:
 	rm -f test
 	rm -f *.deb
 	rm -f *.gz
-	rm -f ../man/vscpl2drv-tcpiplink.3
-	rm -f ../man/vscpl2drv-tcpiplink.3.gz
 
 distclean: clean
 	rm -f config.cache config.log config.status bk-deps bk-make-pch shared-ld-sh Makefile

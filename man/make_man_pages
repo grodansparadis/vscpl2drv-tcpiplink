@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pandoc -s -t man vscpl2drv-tcpiplink.3.md -o vscpl2drv-tcpiplink.3
-tar -zcvf vscpl2drv-tcpiplink.3.gz vscpl2drv-tcpiplink.3
-sudo cp vscpl2drv-tcpiplink.3.gz /usr/share/man/man3/
+pandoc -s -t man vscpl2drv-tcpiplink.1.md -o vscpl2drv-tcpiplink.1
+tar -zcvf vscpl2drv-tcpiplink.1.gz vscpl2drv-tcpiplink.1
+sudo cp vscpl2drv-tcpiplink.1.gz /usr/share/man/man1/
 mandb

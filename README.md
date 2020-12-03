@@ -74,7 +74,7 @@ The VSCP daemon configuration is (normally) located at */etc/vscp/vscpd.conf*. T
 section on the following format
 
 ```xml
-<!-- Level II automation -->
+<!-- Level II TCP/IP link -->
 <driver enable="true"
     name="link"
     path-driver="/usr/lib/vscpl2drv-tcpiplink.so"
