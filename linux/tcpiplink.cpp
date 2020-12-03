@@ -21,9 +21,7 @@
 // Boston, MA 02111-1307, USA.
 //
 
-#include <list>
-#include <map>
-#include <string>
+#include "tcpiplink.h"
 
 #include <limits.h>
 #include <net/if.h>
@@ -60,7 +58,9 @@
 #include <vscphelper.h>
 #include <vscpremotetcpif.h>
 
-#include "tcpiplink.h"
+#include <list>
+#include <map>
+#include <string>
 
 // Buffer for XML parser
 #define XML_BUFF_SIZE 50000
@@ -235,83 +235,6 @@ CTcpipLink::open(std::string& path, const cguid& guid)
                "[vscpl2drv-tcpiplink] Failed to load configuration file [%s]",
                path.c_str());
     }
-
-    // // Parse the configuration string.
-    // std::deque<std::string> tokens;
-    // vscp_split(tokens, std::string(pConfig), ";");
-
-    // // Check for remote host in configuration string
-    // if (!tokens.empty()) {
-    //     // Get remote interface
-    //     m_hostRemote = tokens.front();
-    //     tokens.pop_front();
-    // }
-
-    // // Check for remote port in configuration string
-    // if (!tokens.empty()) {
-    //     // Get remote port
-    //     m_portRemote = vscp_readStringValue(tokens.front());
-    //     tokens.pop_front();
-    // }
-
-    // // Check for remote user in configuration string
-    // if (!tokens.empty()) {
-    //     // Get remote username
-    //     m_usernameRemote = tokens.front();
-    //     tokens.pop_front();
-    // }
-
-    // // Check for remote password in configuration string
-    // if (!tokens.empty()) {
-    //     // Get remote password
-    //     m_passwordRemote = tokens.front();
-    //     tokens.pop_front();
-    // }
-
-    // std::string strRxFilter;
-    // // Check for filter in configuration string
-    // if (!tokens.empty()) {
-    //     // Get filter
-    //     strRxFilter = tokens.front();
-    //     tokens.pop_front();
-    //     vscp_readFilterFromString(&m_rxfilter, strRxFilter);
-    // }
-
-    // // Check for mask in configuration string
-    // std::string strRxMask;
-    // if (!tokens.empty()) {
-    //     // Get mask
-    //     strRxMask = tokens.front();
-    //     tokens.pop_front();
-    //     vscp_readMaskFromString(&m_rxfilter, strRxMask);
-    // }
-
-    // std::string strTxFilter;
-    // // Check for filter in configuration string
-    // if (!tokens.empty()) {
-    //     // Get filter
-    //     strTxFilter = tokens.front();
-    //     tokens.pop_front();
-    //     vscp_readFilterFromString(&m_txfilter, strTxFilter);
-    // }
-
-    // // Check for mask in configuration string
-    // std::string strTxMask;
-    // if (!tokens.empty()) {
-    //     // Get mask
-    //     strTxMask = tokens.front();
-    //     tokens.pop_front();
-    //     vscp_readMaskFromString(&m_txfilter, strTxMask);
-    // }
-
-    // // Check for response timout in configuration string
-    // std::string strResponseTimout;
-    // if (!tokens.empty()) {
-    //     // Get response timout
-    //     strResponseTimout = tokens.front();
-    //     tokens.pop_front();
-    //     m_responseTimeout = vscp_readStringValue(strResponseTimout);
-    // }
 
     // start the workerthread
     if (pthread_create(m_pthreadSend, NULL, workerThreadSend, this)) {

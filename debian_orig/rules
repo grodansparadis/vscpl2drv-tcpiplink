@@ -4,7 +4,7 @@
 	dh $@ --with autoreconf
 
 override_dh_shlibdeps:
-	dpkg-shlibdeps -Tdebian/vscpl2drv-tcpiplink.so.substvars $$(pwd)/debian/vscpl2drv-tcpiplink.so%MAJOR-VERSION/usr/lib/%SUBFOLDER/vscpl2drv-tcpiplink.so.%MAJOR-VERSION.%MINOR-VERSION.%RELEASE-VERSION
+	dpkg-shlibdeps -Tdebian/vscpl2drv-tcpiplink.substvars $$(pwd)/debian/vscpl2drv-tcpiplink/var/lib/vscp/drivers/level2/vscpl2drv-tcpiplink.so.%MAJOR-VERSION.%MINOR-VERSION.%RELEASE-VERSION
 
 
 override_dh_auto_install:

@@ -55,10 +55,15 @@ The following configuration remote variables are defined
 | Remote variable name | Type   | Description |
  | ------------- | ----   | -----------   |
  | **_interface**    | string | The socketcan interface to use. Typically this is “can0, can0, can1...” Defaults is vcan0 the first virtual interface. |
- | **_filter**       | string | Standard VSCP filter in string form. 1,0x0000,0x0006,ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00 as priority,class,type,GUID Used to filter what events that is received from the socketcan interface. If not give all events are received. |
- | **_mask**         | string | Standard VSCP mask in string form. 1,0x0000,0x0006,ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00 as priority,class,type,GUID Used to filter what events that is received from the socketcan interface. If not give all events are received.   |
+ | **_filter**       | string | Standard VSCP filter on string form. Used to filter what events that is received from the socketcan interface. If not give all events are received. |
+ | **_mask**         | string | Standard VSCP mask in string form.  Used to filter what events that is received from the socketcan interface. If not give all events are received.   |
  | **config** | json | All of the above as a JSON object. |
 
+#### Filter string form
+1,0x0000,0x0006,ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00 as priority,class,type,GUID
+
+#### Mask string form
+1,0x0000,0x0006,ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00 as priority,class,type,GUID
 
 ---
 
@@ -87,3 +92,7 @@ The vscpd source code may be downloaded from <https://github.com/grodansparadis/
 
 # COPYRIGHT
 Copyright 2000-2019 Åke Hedman, Grodans Paradis AB - MIT license.
+
+
+
+

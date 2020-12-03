@@ -7,13 +7,14 @@ RELEASE_VERSION=`head -n4  VERSION.m4 |  grep release_version | tr -d "m4_define
 BUILD_VERSION=`head -n4  VERSION.m4 |  grep build_version | tr -d "m4_define[build_version], ()"`
 RELEASE_DEBIAN=`head -n4  VERSION.m4 |  grep release_debian | tr -d "m4_define[release_debian], ()"`
 
-NAME_PLUS_VER="vscpl2drv-tcpiplink$MAJOR_VERSION-$MAJOR_VERSION.$MINOR_VERSION.$RELEASE_VERSION"
+NAME_PLUS_VER="vscpl2drv-tcpiplink-$MAJOR_VERSION.$MINOR_VERSION.$RELEASE_VERSION"
 #BUILD_FOLDER="dist/`date +vscp_build_%y%m%d_%H%M%S`"
-BUILD_FOLDER="dist"
+BUILD_FOLDER="../dist"
+rm -rf ../dist/*
 
 # Debian compability 10 on Raspberry
 # relevant for 'control' and 'compat'
-COMPAT="9"
+COMPAT="12"
 
 # makes correct /usr/lib subfolder (/usr/lib/x86_64-linux-gnu/), none on Raspberry
 # relevant for 'install' and 'links'

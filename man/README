@@ -14,5 +14,5 @@ Process is described here
 Install manpages
 ----------------
 
-1.) sudo cp examplecommand.1 /usr/local/share/man/man1/
+1.) sudo cp examplecommand.3 /usr/local/share/man/man3/
 2.) sudo mandb

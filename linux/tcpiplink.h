@@ -59,7 +59,7 @@
 class CWrkSendTread;
 class CWrkReceiveTread;
 class VscpRemoteTcpIf;
-class wxFile;
+class CHLO;
 
 class CTcpipLink
 {
