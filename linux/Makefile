@@ -37,9 +37,9 @@ WARNINGS = -Wall
 VERSION_DEFS = -DMAJOR_VERSION=$(MAJOR_VERSION) -DMINOR_VERSION=$(MINOR_VERSION) \
 	-DRELEASE_VERSION=$(RELEASE_VERSION) -DBUILD_VERSION=$(BUILD_VERSION)
 
-CFLAGS = -std=c99  -DOPENSSL_API_1_1 ${WARNINGS} -fPIC -DCBC -I.. -I../common \
+CFLAGS = -std=c99  -g -O0 -DOPENSSL_API_1_1 ${WARNINGS} -fPIC -DCBC -I.. -I../common \
 	-I../vscp/src/common -I../vscp/src/vscp/common $(VERSION_DEFS)
-CXXFLAGS = -std=c++11 ${WARNINGS} -D__LINUX__ -fPIC -D_REENTRANT 
+CXXFLAGS = -std=c++11 ${WARNINGS} -D__LINUX__ -fPIC -D_REENTRANT  -g -O0
 CPPFLAGS = -D__LINUX__ -fPIC  ${WARNINGS} -fno-var-tracking-assignments \
     -I.. -I@include@ -I../common \
 	-I../vscp/src/common -I../vscp/src/vscp/common \
@@ -85,7 +85,7 @@ VSCPTCPIP_OBJECTS = vscpl2drv-tcpiplink.o\
 
 ### Targets: ###
 
-all: $(LIB_PLUS_VER) man test
+all: $(LIB_PLUS_VER) test
 
 test:  test.o $(PROJOBJS)
 	$(CXX) -o $@ test.o $(PROJOBJS) $(LDFLAGS)  $(EXTRALIBS)
@@ -155,9 +155,9 @@ uninstall:
 
 install-strip: install
 
-man: ../man/vscpl2drv-tcpiplink.3.md
-	pandoc -s -t man ../man/vscpl2drv-tcpiplink.3.md -o ../man/vscpl2drv-tcpiplink.3
-	tar -zcf ../man/vscpl2drv-tcpiplink.3.gz ../man/vscpl2drv-tcpiplink.3
+man: ../man/vscpl2drv-tcpiplink.1.md
+	pandoc -s -t man ../man/vscpl2drv-tcpiplink.1.md -o ../man/vscpl2drv-tcpiplink.1
+	tar -zcf ../man/vscpl2drv-tcpiplink.1.gz ../man/vscpl2drv-tcpiplink.1
 
 clean: 
 	rm -rf ./.deps ./.pch
@@ -171,8 +171,6 @@ clean:
 	rm -f test
 	rm -f *.deb
 	rm -f *.gz
-	rm -f ../man/vscpl2drv-tcpiplink.3
-	rm -f ../man/vscpl2drv-tcpiplink.3.gz
 
 distclean: clean
 	rm -f config.cache config.log config.status bk-deps bk-make-pch shared-ld-sh Makefile

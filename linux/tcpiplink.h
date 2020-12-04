@@ -116,6 +116,13 @@ class CTcpipLink
     bool addEvent2SendQueue(const vscpEvent* pEvent);
 
   public:
+
+    /// Debug flag
+    bool m_bDebug;
+
+    /// Write flags
+    bool m_bAllowWrite;
+
     /// Run flag
     bool m_bQuit;
 
@@ -150,11 +157,14 @@ class CTcpipLink
     uint32_t m_responseTimeout;
 
     /// Worker threads
-    pthread_t* m_pthreadSend;
-    pthread_t* m_pthreadReceive;
+    pthread_t m_pthreadSend;
+    pthread_t m_pthreadReceive;
 
-    /// VSCP remote server interface
-    VscpRemoteTcpIf m_srvRemote;
+    /// VSCP remote server send interface
+    VscpRemoteTcpIf m_srvRemoteSend;
+
+    /// VSCP remote server receive interface
+    VscpRemoteTcpIf m_srvRemoteReceive;
 
     // Queue
     std::list<vscpEvent*> m_sendList;

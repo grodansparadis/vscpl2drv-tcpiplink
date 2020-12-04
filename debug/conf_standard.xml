@@ -1,12 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8" ?>
     <!-- Version 0.0.1    2019-11-05   -->
     <config debug="true"
-            write="true"
-            zone="1"
-            subzone="2"
-            longitude="15.1604167"
-            latitude="61.7441833"
-            enable-sunrise="true"
-            enable-sunrise-twilight="true"
-            enable-sunset="true"
-            enable-sunset-twilight="true" />
+        write="true" 
+        remote-host="192.168.1.7" 
+        remote-port="9598" 
+        remote-user="admin"
+        remote-password="secret" 
+        response-timeout="0"
+        rxfilter=""
+        rxmask=""
+        txfilter=""
+        txmask=""  />

@@ -87,7 +87,8 @@ _fini()
 
         CTcpipLink* pif = it->second;
         if (NULL != pif) {
-            pif->m_srvRemote.doCmdClose();
+            pif->m_srvRemoteSend.doCmdClose();
+            pif->m_srvRemoteReceive.doCmdClose();
             delete pif;
             pif = NULL;
         }
@@ -192,8 +193,8 @@ VSCPOpen(const char* pPathConfig, const char* pguid)
     if (NULL != pdrvObj) {
 
         cguid guid(pguid);
-        std::string path(pPathConfig);
-        if (pdrvObj->open(path, guid)) {
+        std::string path = pPathConfig;
+        if (path.length() && pdrvObj->open(path, guid)) {
 
             if (!(h = addDriverObject(pdrvObj))) {
                 delete pdrvObj;

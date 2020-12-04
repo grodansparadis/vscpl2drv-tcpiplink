@@ -77,6 +77,8 @@ workerThreadSend(void* pData);
 
 CTcpipLink::CTcpipLink()
 {
+    m_bDebug = false;
+    m_bAllowWrite = false;
     m_bQuit = false;
     m_pthreadSend = NULL;
     m_pthreadReceive = NULL;
@@ -134,29 +136,51 @@ void
 startSetupParser(void* data, const char* name, const char** attr)
 {
     CTcpipLink* pObj = (CTcpipLink*)data;
-    if (NULL == pObj)
+    if (NULL == pObj) {
         return;
+    }
 
-    if ((0 == strcmp(name, "setup")) && (0 == depth_setup_parser)) {
+    if ((0 == strcmp(name, "config")) && (0 == depth_setup_parser)) {
 
         for (int i = 0; attr[i]; i += 2) {
 
             std::string attribute = attr[i + 1];
             vscp_trim(attribute);
 
-            if (0 == strcasecmp(attr[i], "host")) {
+            if (0 == strcasecmp(attr[i], "debug")) {
+                if (!attribute.empty()) {
+                    if ( "true" == attribute ) {
+                        pObj->m_bDebug = true;
+                    }
+                    else {
+                        pObj->m_bDebug = false;
+                    }
+                }
+            }
+            else if (0 == strcasecmp(attr[i], "write")) {
+                if (!attribute.empty()) {
+                    if ( "true" == attribute ) {
+                        pObj->m_bAllowWrite = true;
+                    }
+                    else {
+                        pObj->m_bAllowWrite = false;
+                    }
+                }
+            }
+            else if (0 == strcasecmp(attr[i], "remote-host")) {
                 if (!attribute.empty()) {
                     pObj->m_hostRemote = attribute;
                 }
-            } else if (0 == strcasecmp(attr[i], "port")) {
+            } 
+            else if (0 == strcasecmp(attr[i], "remote-port")) {
                 if (!attribute.empty()) {
                     pObj->m_portRemote = vscp_readStringValue(attribute);
                 }
-            } else if (0 == strcasecmp(attr[i], "user")) {
+            } else if (0 == strcasecmp(attr[i], "remote-user")) {
                 if (!attribute.empty()) {
                     pObj->m_usernameRemote = attribute;
                 }
-            } else if (0 == strcasecmp(attr[i], "password")) {
+            } else if (0 == strcasecmp(attr[i], "remote-password")) {
                 if (!attribute.empty()) {
                     pObj->m_passwordRemote = attribute;
                 }
@@ -196,7 +220,7 @@ startSetupParser(void* data, const char* name, const char** attr)
                                "event transmit mask.");
                     }
                 }
-            } else if (0 == strcmp(attr[i], "responsetimeout")) {
+            } else if (0 == strcmp(attr[i], "response-timeout")) {
                 if (!attribute.empty()) {
                     pObj->m_responseTimeout = vscp_readStringValue(attribute);
                 }
@@ -237,13 +261,13 @@ CTcpipLink::open(std::string& path, const cguid& guid)
     }
 
     // start the workerthread
-    if (pthread_create(m_pthreadSend, NULL, workerThreadSend, this)) {
+    if (pthread_create(&m_pthreadSend, NULL, workerThreadSend, this)) {
         syslog(LOG_ERR,
                "[vscpl2drv-tcpiplink] Unable to start send worker thread.");
         return false;
     }
 
-    if (pthread_create(m_pthreadReceive, NULL, workerThreadReceive, this)) {
+    if (pthread_create(&m_pthreadReceive, NULL, workerThreadReceive, this)) {
         syslog(LOG_ERR,
                "[vscpl2drv-tcpiplink] Unable to start receive worker thread.");
         return false;
@@ -756,14 +780,15 @@ workerThreadSend(void* pData)
     bool bRemoteConnectionLost = false;
 
     CTcpipLink* pObj = (CTcpipLink*)pData;
-    if (NULL == pObj)
+    if (NULL == pObj) {
         return NULL;
+    }
 
 retry_send_connect:
 
     // Open remote interface
     if (VSCP_ERROR_SUCCESS !=
-        pObj->m_srvRemote.doCmdOpen(pObj->m_hostRemote,
+        pObj->m_srvRemoteSend.doCmdOpen(pObj->m_hostRemote,
                                     pObj->m_portRemote,
                                     pObj->m_usernameRemote,
                                     pObj->m_passwordRemote)) {
@@ -790,16 +815,16 @@ retry_send_connect:
            (const char*)"Connect to remote VSCP TCP/IP interface [SEND].");
 
     // Find the channel id
-    pObj->m_srvRemote.doCmdGetChannelID(&pObj->txChannelID);
+    pObj->m_srvRemoteSend.doCmdGetChannelID(&pObj->txChannelID);
 
     while (!pObj->m_bQuit) {
 
         // Make sure the remote connection is up
-        if (!pObj->m_srvRemote.isConnected()) {
+        if (!pObj->m_srvRemoteSend.isConnected()) {
 
             if (!bRemoteConnectionLost) {
                 bRemoteConnectionLost = true;
-                pObj->m_srvRemote.doCmdClose();
+                pObj->m_srvRemoteSend.doCmdClose();
                 syslog(LOG_ERR,
                        "%s %s ",
                        VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
@@ -810,7 +835,7 @@ retry_send_connect:
             sleep(VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME);
 
             if (VSCP_ERROR_SUCCESS !=
-                pObj->m_srvRemote.doCmdOpen(pObj->m_hostRemote,
+                pObj->m_srvRemoteSend.doCmdOpen(pObj->m_hostRemote,
                                             pObj->m_portRemote,
                                             pObj->m_usernameRemote,
                                             pObj->m_passwordRemote)) {
@@ -820,7 +845,7 @@ retry_send_connect:
                        (const char*)"Reconnected to remote host [SEND].");
 
                 // Find the channel id
-                pObj->m_srvRemote.doCmdGetChannelID(&pObj->txChannelID);
+                pObj->m_srvRemoteSend.doCmdGetChannelID(&pObj->txChannelID);
 
                 bRemoteConnectionLost = false;
             }
@@ -859,13 +884,13 @@ retry_send_connect:
             // Yes there are data to send
             // Send it out to the remote server
 
-            pObj->m_srvRemote.doCmdSend(pEvent);
+            pObj->m_srvRemoteSend.doCmdSend(pEvent);
             vscp_deleteEvent_v2(&pEvent);
         }
     }
 
     // Close the channel
-    pObj->m_srvRemote.doCmdClose();
+    pObj->m_srvRemoteSend.doCmdClose();
 
     syslog(LOG_ERR,
            "%s %s ",
@@ -893,10 +918,10 @@ retry_receive_connect:
 
     // Open remote interface
     if (VSCP_ERROR_SUCCESS !=
-        pObj->m_srvRemote.doCmdOpen(pObj->m_hostRemote,
-                                    pObj->m_portRemote,
-                                    pObj->m_usernameRemote,
-                                    pObj->m_passwordRemote)) {
+        pObj->m_srvRemoteReceive.doCmdOpen(pObj->m_hostRemote,
+                                            pObj->m_portRemote,
+                                            pObj->m_usernameRemote,
+                                            pObj->m_passwordRemote)) {
         syslog(LOG_ERR,
                "%s %s ",
                VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
@@ -921,7 +946,7 @@ retry_receive_connect:
 
     // Set receive filter
     if (VSCP_ERROR_SUCCESS !=
-        pObj->m_srvRemote.doCmdFilter(&pObj->m_rxfilter)) {
+        pObj->m_srvRemoteReceive.doCmdFilter(&pObj->m_rxfilter)) {
         syslog(LOG_ERR,
                "%s %s ",
                VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
@@ -929,32 +954,29 @@ retry_receive_connect:
     }
 
     // Enter the receive loop
-    pObj->m_srvRemote.doCmdEnterReceiveLoop();
+    pObj->m_srvRemoteReceive.doCmdEnterReceiveLoop();
 
     __attribute__((unused)) vscpEventEx eventEx;
     while (!pObj->m_bQuit) {
 
         // Make sure the remote connection is up
-        if (!pObj->m_srvRemote.isConnected() ||
-            ((vscp_getMsTimeStamp() - pObj->m_srvRemote.getlastResponseTime()) >
+        if (!pObj->m_srvRemoteReceive.isConnected() ||
+            ((vscp_getMsTimeStamp() - pObj->m_srvRemoteReceive.getlastResponseTime()) >
              (VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME * 1000))) {
 
             if (!bRemoteConnectionLost) {
 
                 bRemoteConnectionLost = true;
-                pObj->m_srvRemote.doCmdClose();
-                syslog(
-                  LOG_ERR,
-                  "%s %s ",
-                  VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
-                  (const char*)"Lost connection to remote host [Receive].");
+                pObj->m_srvRemoteReceive.doCmdClose();
+                syslog(LOG_ERR, "%s %s ", VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
+                            (const char*)"Lost connection to remote host [Receive].");
             }
 
             // Wait before we try to connect again
             sleep(VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME);
 
             if (VSCP_ERROR_SUCCESS !=
-                pObj->m_srvRemote.doCmdOpen(pObj->m_hostRemote,
+                pObj->m_srvRemoteReceive.doCmdOpen(pObj->m_hostRemote,
                                             pObj->m_portRemote,
                                             pObj->m_usernameRemote,
                                             pObj->m_passwordRemote)) {
@@ -966,7 +988,7 @@ retry_receive_connect:
             }
 
             // Enter the receive loop
-            pObj->m_srvRemote.doCmdEnterReceiveLoop();
+            pObj->m_srvRemoteReceive.doCmdEnterReceiveLoop();
 
             continue;
         }
@@ -979,7 +1001,7 @@ retry_receive_connect:
             pEvent->pdata = NULL;
 
             if (CANAL_ERROR_SUCCESS ==
-                pObj->m_srvRemote.doCmdBlockingReceive(pEvent)) {
+                pObj->m_srvRemoteReceive.doCmdBlockingReceive(pEvent)) {
 
                 // Filter is handled at server side. We check so we don't
                 // receive things we send ourself.
@@ -999,7 +1021,7 @@ retry_receive_connect:
     }
 
     // Close the channel
-    pObj->m_srvRemote.doCmdClose();
+    pObj->m_srvRemoteReceive.doCmdClose();
 
     syslog(
       LOG_ERR,
