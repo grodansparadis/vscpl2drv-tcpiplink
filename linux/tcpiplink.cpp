@@ -80,8 +80,7 @@ CTcpipLink::CTcpipLink()
     m_bDebug = false;
     m_bAllowWrite = false;
     m_bQuit = false;
-    m_pthreadSend = NULL;
-    m_pthreadReceive = NULL;
+
     vscp_clearVSCPFilter(&m_rxfilter); // Accept all events
     vscp_clearVSCPFilter(&m_txfilter); // Send all events
     m_responseTimeout = TCPIP_DEFAULT_INNER_RESPONSE_TIMEOUT;
@@ -916,6 +915,12 @@ workerThreadReceive(void* pData)
 
 retry_receive_connect:
 
+    if (pObj->m_bDebug) {
+        printf("Open receive channel hostr = %s port = %d\n",
+                pObj->m_hostRemote.c_str(), 
+                pObj->m_portRemote);
+    }
+
     // Open remote interface
     if (VSCP_ERROR_SUCCESS !=
         pObj->m_srvRemoteReceive.doCmdOpen(pObj->m_hostRemote,
@@ -977,9 +982,9 @@ retry_receive_connect:
 
             if (VSCP_ERROR_SUCCESS !=
                 pObj->m_srvRemoteReceive.doCmdOpen(pObj->m_hostRemote,
-                                            pObj->m_portRemote,
-                                            pObj->m_usernameRemote,
-                                            pObj->m_passwordRemote)) {
+                                                    pObj->m_portRemote,
+                                                    pObj->m_usernameRemote,
+                                                    pObj->m_passwordRemote)) {
                 syslog(LOG_ERR,
                        "%s %s ",
                        VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,

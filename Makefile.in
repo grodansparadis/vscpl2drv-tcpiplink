@@ -10,6 +10,8 @@ BUILD_VERSION=@BUILD_VERSION@
 PACKAGE_VERSION=@PACKAGE_VERSION@
 
 STATIC=@STATIC@
+VSCP_PROJ_BASE_DIR=@DESTDIR@
+DESTDIR=@DESTDIR@
 
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = ${INSTALL}
@@ -25,12 +27,15 @@ all:
 	echo "Building in dir " $$d && echo "====================================================" && cd $$d && $(MAKE)); done
 
 
-install:
+install: 
+	$(INSTALL_DIR) $(DESTDIR)/vscpd 
+	$(INSTALL_PROGRAM) install-files/vscpl2drv-tcpiplink.conf $(DESTDIR)/vscpd
 # Install sub components
 	@for d in $(PROJ_SUBDIRS); do (echo "====================================================" &&\
 	echo "Building in dir " $$d && echo "====================================================" && cd $$d && $(MAKE) install); done
 
-uninstall:
+uninstall: 
+	rm $(DESTDIR)/vscpd/vscpl2drv-tcpiplink.conf
 # Uninstall sub components
 	@for d in $(PROJ_SUBDIRS); do (echo "====================================================" &&\
 	echo "Building in dir " $$d && echo "====================================================" && cd $$d && $(MAKE) uninstall); done
