@@ -65,6 +65,15 @@
 /* Define to 1 if you have the `rt' library (-lrt). */
 #define HAVE_LIBRT 1
 
+/* Define to 1 if you have the `ssl' library (-lssl). */
+#define HAVE_LIBSSL 1
+
+/* Define to 1 if you have the `wrap' library (-lwrap). */
+#define HAVE_LIBWRAP 1
+
+/* Define to 1 if you have the `z' library (-lz). */
+#define HAVE_LIBZ 1
+
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
 

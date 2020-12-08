@@ -33,6 +33,9 @@ AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([crypto], [MD5_Init])
 AC_CHECK_LIB([m],[sin])
 AC_CHECK_LIB([rt],[clock_gettime])
+AC_CHECK_LIB([z], [gzopen])
+AC_CHECK_LIB([wrap], [request_init])
+AC_CHECK_LIB([ssl], [SSL_free])
 AC_CHECK_LIB([expat], [XML_ParserCreate])
 
 # Checks for header files.
@@ -112,13 +115,30 @@ CFLAGS+=" -DOPENSSL_API_1_0"
 fi
 
 dnl
-dnl  Debugging mode
-dnl      Done automatically now
+dnl WITH_WRAP 
+dnl 
 
-dnl AC_ARG_ENABLE(debug,
-dnl [  --enable-debug/--disable-debug          debug mode (default disabled)],
-dnl [vscp_debug=yes],[vscp_debug=no])
-dnl test "${vscp_debug}" != "yes" && vscp_debug="no"
+AC_ARG_ENABLE(wrap,
+   AS_HELP_STRING([--enable-wrap], [Build wrap tcpd support (default enabled)]) )
+
+dnl
+dnl WRAP 
+dnl
+
+AS_IF([test "x$enable_wrap" != "xno"], [
+  CFLAGS+=" -DWITH_WRAP"
+  CPPFLAGS+=" -DWITH_WRAP"
+])
+
+AC_ARG_ENABLE(asan,
+   AS_HELP_STRING([--enable-asan], [--enable-asan to build with AddressSanitizer https://github.com/google/sanitizers/wiki/AddressSanitizer (default disabled]))
+
+AS_IF([test "x$enable_asan" == "xyes"], [
+  CFLAGS+=" -fsanitize=address"
+  CPPFLAGS+=" -fsanitize=address"
+  CXXFLAGS+=" -fsanitize=address"
+  LDFLAGS+=" -fsanitize=address"
+])
 
 dnl
 dnl Project base installation folder
@@ -170,7 +190,16 @@ else
    echo "build flavour    : release "
 fi
 
+AS_IF([test "x$enable_wrap" = "xno"], 
+   [echo   "tcpd wrap enabled     : no"],
+   [echo   "tcpd wrap enabled     : yes" ])
+   
+AS_IF([test "x$enable_asan" = "xyes"], 
+   [echo   "asan enabled          : yes"],
+   [echo   "asan enabled          : no" ])
+
 dnl Output some debugging information
+echo
 echo   "LIBS             : ${LIBS}"
 echo   "EXTRALIBS        : ${EXTRALIBS}"
 echo   "EXTRACPPFLAGS    : ${CPPFLAGS}"
