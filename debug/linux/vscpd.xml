@@ -108,7 +108,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>
         </driver>
 
@@ -143,7 +143,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 
@@ -215,7 +215,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 
@@ -262,7 +262,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 
@@ -295,7 +295,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 
@@ -328,7 +328,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 
@@ -394,7 +394,7 @@
                     <subscribe topic="vscp/{{guid}}/#"
                                     qos="0"
                                     options="0" />
-                    <publish topic="vscp/{{guid}}/{{class}}/{{type}}/"/>
+                    <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
             </mqtt>                    
         </driver>
 
@@ -427,7 +427,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 
@@ -460,7 +460,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 
@@ -493,7 +493,7 @@
                         <subscribe topic="vscp/{{guid}}/#"
                                         qos="0"
                                         options="0" />
-                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}"/>
+                        <publish topic="vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}"/>
                 </mqtt>                    
         </driver>
 

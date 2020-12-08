@@ -916,7 +916,7 @@ workerThreadReceive(void* pData)
 retry_receive_connect:
 
     if (pObj->m_bDebug) {
-        printf("Open receive channel hostr = %s port = %d\n",
+        printf("Open receive channel host = %s port = %d\n",
                 pObj->m_hostRemote.c_str(), 
                 pObj->m_portRemote);
     }
