@@ -250,16 +250,22 @@ VSCPRead(long handle, vscpEvent* pEvent, unsigned long timeout)
     int rv = 0;
 
     // Check pointer
-    if (NULL == pEvent)
+    if (NULL == pEvent) {
         return CANAL_ERROR_PARAMETER;
+    }
 
     CTcpipLink* pdrvObj = getDriverObject(handle);
-    if (NULL == pdrvObj)
+    if (NULL == pdrvObj) {
         return CANAL_ERROR_MEMORY;
+    }
 
     struct timespec ts;
-    ts.tv_sec = 0;
-    ts.tv_nsec = timeout * 1000;
+    if (clock_gettime(CLOCK_REALTIME, &ts) < 0) {
+		return CANAL_ERROR_INTERNAL;
+	}
+
+    //ts.tv_sec += 8;
+    ts.tv_nsec += (timeout * 1000);
     if (-1 == (rv = sem_timedwait(&pdrvObj->m_semReceiveQueue, &ts))) {
         if (ETIMEDOUT == errno) {
             return CANAL_ERROR_TIMEOUT;

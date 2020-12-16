@@ -64,7 +64,8 @@ datadir = ${prefix}/share
 includedir = ${prefix}/include
 DLLPREFIX = lib
 
-LIB_PLUS_VER = "vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_VERSION)"
+#LIB_PLUS_VER = "vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION).$(RELEASE_VERSION)"
+LIB_PLUS_VER = "vscpl2drv-tcpiplink.so"
 LIB_SONAME = "vscpl2drv-tcpiplink.so.$(MAJOR_VERSION)"
 
 ### Variables: ###
@@ -141,17 +142,17 @@ install: all
 	$(INSTALL_DIR) $(DESTDIR)/drivers/level2/
 	$(STRIP) $(LIB_PLUS_VER)
 	$(INSTALL_PROGRAM) $(LIB_PLUS_VER) $(DESTDIR)/drivers/level2/
-	ln -fs $(DESTDIR)/drivers/level2//$(LIB_PLUS_VER) $(DESTDIR)/drivers/level2//vscpl2drv-tcpiplink.so
-	ln -fs $(DESTDIR)/drivers/level2//$(LIB_PLUS_VER) $(DESTDIR)/drivers/level2//vscpl2drv-tcpiplink.so.$(MAJOR_VERSION)
-	ln -fs $(DESTDIR)/drivers/level2//$(LIB_PLUS_VER) $(DESTDIR)/drivers/level2//vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION)
-	$(INSTALL_PROGRAM) libvscpl2drv-tcpiplink.a $(DESTDIR)/drivers/level2/
+#	ln -fs $(DESTDIR)/drivers/level2//$(LIB_PLUS_VER) $(DESTDIR)/drivers/level2//vscpl2drv-tcpiplink.so
+#	ln -fs $(DESTDIR)/drivers/level2//$(LIB_PLUS_VER) $(DESTDIR)/drivers/level2//vscpl2drv-tcpiplink.so.$(MAJOR_VERSION)
+#	ln -fs $(DESTDIR)/drivers/level2//$(LIB_PLUS_VER) $(DESTDIR)/drivers/level2//vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION)
+#	$(INSTALL_PROGRAM) libvscpl2drv-tcpiplink.a $(DESTDIR)/drivers/level2/
 
 uninstall: 	
 	rm -f  $(DESTDIR)/drivers/level2/$(LIB_PLUS_VER)
-	rm -f  $(DESTDIR)/drivers/level2/vscpl2drv-tcpiplink.so
-	rm -f  $(DESTDIR)/drivers/level2/vscpl2drv-tcpiplink.so.$(MAJOR_VERSION)
-	rm -f  $(DESTDIR)/drivers/level2/vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION)
-	rm -f  $(DESTDIR)/drivers/level2/libvscpl2drv-tcpiplink.a
+#	rm -f  $(DESTDIR)/drivers/level2/vscpl2drv-tcpiplink.so
+#	rm -f  $(DESTDIR)/drivers/level2/vscpl2drv-tcpiplink.so.$(MAJOR_VERSION)
+#	rm -f  $(DESTDIR)/drivers/level2/vscpl2drv-tcpiplink.so.$(MAJOR_VERSION).$(MINOR_VERSION)
+#	rm -f  $(DESTDIR)/drivers/level2/libvscpl2drv-tcpiplink.a
 
 install-strip: install
 

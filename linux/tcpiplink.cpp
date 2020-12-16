@@ -1000,28 +1000,35 @@ retry_receive_connect:
         }
 
         // Check if remote server has something to send to us
-        vscpEvent* pEvent = new vscpEvent;
-        if (NULL != pEvent) {
+        vscpEvent e;
 
-            pEvent->sizeData = 0;
-            pEvent->pdata = NULL;
+        if (CANAL_ERROR_SUCCESS ==
+            pObj->m_srvRemoteReceive.doCmdBlockingReceive(&e, 500)) {
 
-            if (CANAL_ERROR_SUCCESS ==
-                pObj->m_srvRemoteReceive.doCmdBlockingReceive(pEvent)) {
+            vscpEvent* pEvent = new vscpEvent;
+            if (NULL != pEvent) {
+
+                pEvent->sizeData = 0;
+                pEvent->pdata = NULL;
+
+                if (!vscp_copyEvent(pEvent, &e)) {
+                    syslog(LOG_ERR,
+                            "%s %s ",
+                            VSCP_TCPIPLINK_SYSLOG_DRIVER_ID,
+                            (const char*)"Failed to copy received event [RECEIVE].");
+                    continue;    
+                }
 
                 // Filter is handled at server side. We check so we don't
                 // receive things we send ourself.
                 if (pObj->txChannelID != pEvent->obid) {
                     pthread_mutex_lock(&pObj->m_mutexReceiveQueue);
                     pObj->m_receiveList.push_back(pEvent);
-                    sem_post(&pObj->m_semReceiveQueue);
                     pthread_mutex_unlock(&pObj->m_mutexReceiveQueue);
+                    sem_post(&pObj->m_semReceiveQueue);
                 } else {
-                    vscp_deleteEvent(pEvent);
+                    vscp_deleteEvent_v2(&pEvent);
                 }
-
-            } else {
-                vscp_deleteEvent(pEvent);
             }
         }
     }

@@ -11,9 +11,9 @@
         "host" : "192.168.1.7",
         "port" : 1883,
         "user" : "vscp",
-	    "password": "secret",
-	    "clientid" : "mosq-vscp-daemon-000001",
-	    "format" : "json",
+	"password": "secret",
+	"clientid" : "mosq-vscp-daemon-000001",
+	"format" : "json",
         "qos" : 1,
         "bcleansession" : false,
         "bretain" : false,
@@ -112,7 +112,7 @@
                 }
             },
             {
-                "enable" : true,
+                "enable" : false,
                 "name" : "socketcanl1",
                 "config" : "can0",
                 "flags" : 0,
@@ -324,12 +324,12 @@
             {
                 "enable" : true,
                 "name" : "tcpiplink",
-                "path-driver" : "/var/lib/vscp/drivers/level2/vscpl2drv-tcpiplink.so",
-                "path-config" : "/var/lib/vscp/vscpd/tcpiplink.conf",
+                "path-driver" : "/home/akhe/development/VSCP/vscpl2drv-tcpiplink/linux/vscpl2drv-tcpiplink.so",
+                "path-config" : "/home/akhe/development/VSCP/vscpl2drv-tcpiplink/debug/tcpiplink.xml",
                 "guid" : "FF:FF:FF:FF:FF:FF:FF:F5:09:00:00:00:00:00:00:00",
 
                 "mqtt" : {
-                    "host" : "127.0.0.1",
+                    "host" : "192.168.1.7",
                     "port" : 1883,
                     "user" : "vscp",
                     "password": "secret",
