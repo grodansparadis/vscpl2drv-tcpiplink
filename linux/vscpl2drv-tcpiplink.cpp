@@ -259,14 +259,7 @@ VSCPRead(long handle, vscpEvent* pEvent, unsigned long timeout)
         return CANAL_ERROR_MEMORY;
     }
 
-    struct timespec ts;
-    if (clock_gettime(CLOCK_REALTIME, &ts) < 0) {
-		return CANAL_ERROR_INTERNAL;
-	}
-
-    //ts.tv_sec += 8;
-    ts.tv_nsec += (timeout * 1000);
-    if (-1 == (rv = sem_timedwait(&pdrvObj->m_semReceiveQueue, &ts))) {
+    if (-1 == (rv = vscp_sem_wait(&pdrvObj->m_semReceiveQueue, timeout))) {
         if (ETIMEDOUT == errno) {
             return CANAL_ERROR_TIMEOUT;
         } else if (EINTR == errno) {
