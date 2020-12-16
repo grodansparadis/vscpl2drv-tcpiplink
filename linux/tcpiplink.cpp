@@ -441,6 +441,7 @@ CTcpipLink::doLoadConfig(void)
 
     size_t file_size = 0;
     file_size = fread(buf, sizeof(char), XML_BUFF_SIZE, fp);
+    fclose(fp);
 
     if (!XML_ParseBuffer(xmlParser, file_size, file_size == 0)) {
         syslog(LOG_ERR, "[vscpl2drv-tcpiplink] Failed parse XML setup.");
