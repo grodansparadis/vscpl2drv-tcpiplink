@@ -232,8 +232,9 @@ extern "C" int
 VSCPWrite(long handle, const vscpEvent* pEvent, unsigned long timeout)
 {
     CTcpipLink* pdrvObj = getDriverObject(handle);
-    if (NULL == pdrvObj)
+    if (NULL == pdrvObj) {
         return CANAL_ERROR_MEMORY;
+    }
 
     pdrvObj->addEvent2SendQueue(pEvent);
 
