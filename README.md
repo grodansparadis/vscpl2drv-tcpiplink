@@ -10,6 +10,7 @@ The tcp/ip driver can send/receive events to/from a remote VSCP tcp/ip interface
 
 The driver will try to hold a connection open even if the remote node disconnects. This makes it possible to replace a node or take it down for maintenance and still have the link online again as soon as the node is powered up. 
 
+Thje tcp/ip link protocol is described [here](https://grodansparadis.github.io/vscp-doc-spec/#/./vscp_tcpiplink).
 
 ## Install the driver on Linux
 You can install the driver using the debian package with

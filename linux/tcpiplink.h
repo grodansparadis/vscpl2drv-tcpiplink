@@ -7,7 +7,7 @@
 //
 // This file is part of the VSCP (http://www.vscp.org)
 //
-// Copyright (C) 2000-2020 Ake Hedman,
+// Copyright (C) 2000-2021 Ake Hedman,
 // Grodans Paradis AB, <akhe@grodansparadis.com>
 //
 // This file is distributed in the hope that it will be useful,
@@ -47,9 +47,9 @@
 #define VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME 30
 
 #define VSCP_TCPIPLINK_SYSLOG_DRIVER_ID "[vscpl2drv-tcpiplink] "
-#define VSCP_LEVEL2_DLL_LOGGER_OBJ_MUTEX                                       \
+#define VSCP_LEVEL2_DLL_TCPIPLINK_OBJ_MUTEX                                       \
     "___VSCP__DLL_L2TCPIPLINK_OBJ_MUTEX____"
-#define VSCP_SOCKETCAN_LIST_MAX_MSG 2048
+#define VSCP_TCPIPLINK_LIST_MAX_MSG 2048
 
 // Module Local HLO op's
 #define HLO_OP_LOCAL_CONNECT      HLO_OP_USER_DEFINED + 0
