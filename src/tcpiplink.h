@@ -43,17 +43,24 @@
 #include <vscp.h>
 #include <vscpremotetcpif.h>
 
+#include <json.hpp> // Needs C++11  -std=c++11
+
+#include "spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/spdlog.h"
+
+// https://github.com/nlohmann/json
+using json = nlohmann::json;
+
 // Seconds before trying to reconnect to a broken connection
 #define VSCP_TCPIPLINK_DEFAULT_RECONNECT_TIME 30
 
-#define VSCP_TCPIPLINK_SYSLOG_DRIVER_ID "[vscpl2drv-tcpiplink] "
-#define VSCP_LEVEL2_DLL_TCPIPLINK_OBJ_MUTEX                                       \
-    "___VSCP__DLL_L2TCPIPLINK_OBJ_MUTEX____"
-#define VSCP_TCPIPLINK_LIST_MAX_MSG 2048
+#define VSCP_TCPIPLINK_SYSLOG_DRIVER_ID     "[vscpl2drv-tcpiplink] "
+#define VSCP_LEVEL2_DLL_TCPIPLINK_OBJ_MUTEX "___VSCP__DLL_L2TCPIPLINK_OBJ_MUTEX____"
+#define VSCP_TCPIPLINK_LIST_MAX_MSG         2048
 
 // Module Local HLO op's
-#define HLO_OP_LOCAL_CONNECT      HLO_OP_USER_DEFINED + 0
-#define HLO_OP_LOCAL_DISCONNECT   HLO_OP_USER_DEFINED + 1
+#define HLO_OP_LOCAL_CONNECT    HLO_OP_USER_DEFINED + 0
+#define HLO_OP_LOCAL_DISCONNECT HLO_OP_USER_DEFINED + 1
 
 // Forward declarations
 class CWrkSendTread;
@@ -61,124 +68,166 @@ class CWrkReceiveTread;
 class VscpRemoteTcpIf;
 class CHLO;
 
-class CTcpipLink
-{
-  public:
-    /// Constructor
-    CTcpipLink();
+class CTcpipLink {
+public:
+  /// Constructor
+  CTcpipLink();
 
-    /// Destructor
-    virtual ~CTcpipLink();
+  /// Destructor
+  virtual ~CTcpipLink();
 
-    /*!
-        Open
-        @return True on success.
-     */
-    bool open(std::string& path, const cguid& guid);
+  /*!
+      Open
+      @return True on success.
+   */
+  bool open(std::string &path, const cguid &guid);
 
-    /*!
-        Flush and close the log file
-     */
-    void close(void);
+  /*!
+      Flush and close the log file
+   */
+  void close(void);
 
-    /*!
-      Parse HLO object
-    */
-    bool parseHLO(uint16_t size, uint8_t* inbuf, CHLO* phlo);
+  /*!
+    Parse HLO object
+  */
+  bool parseHLO(uint16_t size, uint8_t *inbuf, CHLO *phlo);
 
-    /*!
-      Handle high level object
-    */
-    bool handleHLO(vscpEvent* pEvent);
+  /*!
+    Handle high level object
+  */
+  bool handleHLO(vscpEvent *pEvent);
 
-    /*!
-      Load configuration if allowed to do so
-    */
-    bool doLoadConfig(void);
+  /*!
+    Read encryption key
+    @param path Path to file containing key
+    @return true on success, false on failure
+  */
+  bool readEncryptionKey(const std::string &path);
 
-    /*!
-      Save configuration if allowed to do so
-    */
-    bool doSaveConfig(void);
+  /*!
+    Load configuration if allowed to do so
+    @return true on success, false on failure
+  */
+  bool doLoadConfig(void);
 
-    /*!
-        Put event on receive queue and signal
-        that a new event is available
+  /*!
+    Save configuration if allowed to do so
+  */
+  bool doSaveConfig(void);
 
-        @param ex Event to send
-        @return true on success, false on failure
-    */
-    bool eventExToReceiveQueue(vscpEventEx& ex);
+  /*!
+      Put event on receive queue and signal
+      that a new event is available
 
-    /*!
-        Add event to send queue
-     */
-    bool addEvent2SendQueue(const vscpEvent* pEvent);
+      @param ex Event to send
+      @return true on success, false on failure
+  */
+  bool eventExToReceiveQueue(vscpEventEx &ex);
 
-  public:
+  /*!
+      Add event to send queue
+   */
+  bool addEvent2SendQueue(const vscpEvent *pEvent);
 
-    /// Debug flag
-    bool m_bDebug;
+public:
+  /// Parsed Config file
+  json m_j_config;
 
-    /// Write flags
-    bool m_bAllowWrite;
+  /// Debug flag
+  bool m_bDebug;
 
-    /// Run flag
-    bool m_bQuit;
+  /// Write flags
+  bool m_bWriteEnable;
 
-    // Our GUID
-    cguid m_guid;
+  /// Run flag
+  bool m_bQuit;
 
-    // Path to configuration file
-    std::string m_path;
+  // Our GUID
+  cguid m_guid;
 
-    /// server supplied host
-    std::string m_hostRemote;
+  // The default random encryption key
+  uint8_t m_vscp_key[32] = { 0x2d, 0xbb, 0x07, 0x9a, 0x38, 0x98, 0x5a, 0xf0, 0x0e, 0xbe, 0xef,
+                             0xe2, 0x2f, 0x9f, 0xfa, 0x0e, 0x7f, 0x72, 0xdf, 0x06, 0xeb, 0xe4,
+                             0x45, 0x63, 0xed, 0xf4, 0xa1, 0x07, 0x3c, 0xab, 0xc7, 0xd4 };
 
-    /// Server supplied port
-    int m_portRemote;
+  /////////////////////////////////////////////////////////
+  //                      Logging
+  /////////////////////////////////////////////////////////
 
-    /// Server supplied username
-    std::string m_usernameRemote;
+  bool m_bConsoleLogEnable;                    // True to enable logging
+  spdlog::level::level_enum m_consoleLogLevel; // log level
+  std::string m_consoleLogPattern;             // log file pattern
 
-    /// Server supplied password
-    std::string m_passwordRemote;
+  bool m_bFileLogEnable;                    // True to enable logging
+  spdlog::level::level_enum m_fileLogLevel; // log level
+  std::string m_fileLogPattern;             // log file pattern
+  std::string m_path_to_log_file;           // Path to logfile
+  uint32_t m_max_log_size;                  // Max size for logfile before rotating occures
+  uint16_t m_max_log_files;                 // Max log files to keep
 
-    /// Send channel id
-    uint32_t txChannelID;
+  // Path to configuration file
+  std::string m_path;
 
-    /// Filter for receive
-    vscpEventFilter m_rxfilter;
+  /// server supplied host
+  std::string m_hostRemote;
 
-    /// Filter for transmitt
-    vscpEventFilter m_txfilter;
+  /// Server supplied port
+  int m_portRemote;
 
-    // TCP/IP link response timeout
-    uint32_t m_responseTimeout;
+  /// Server supplied username
+  std::string m_usernameRemote;
 
-    /// Worker threads
-    pthread_t m_pthreadSend;
-    pthread_t m_pthreadReceive;
+  /// Server supplied password
+  std::string m_passwordRemote;
 
-    /// VSCP remote server send interface
-    VscpRemoteTcpIf m_srvRemoteSend;
+  /// Send channel id
+  uint32_t txChannelID;
 
-    /// VSCP remote server receive interface
-    VscpRemoteTcpIf m_srvRemoteReceive;
+  /// Filter for receive
+  vscpEventFilter m_filterIn;
 
-    // Queue
-    std::list<vscpEvent*> m_sendList;
-    std::list<vscpEvent*> m_receiveList;
+  /// Filter for transmitt
+  vscpEventFilter m_filterOut;
 
-    /*!
-        Event object to indicate that there is an event in the output queue
-     */
-    sem_t m_semSendQueue;
-    sem_t m_semReceiveQueue;
+  // TCP/IP link response timeout
+  uint32_t m_responseTimeout;
 
-    // Mutex to protect the output queue
-    pthread_mutex_t m_mutexSendQueue;
-    pthread_mutex_t m_mutexReceiveQueue;
+  // TLS
+  std::string m_web_ssl_certificate;
+  std::string m_web_ssl_certificate_chain;
+  bool m_web_ssl_verify_peer;
+  std::string m_web_ssl_ca_path;
+  std::string m_web_ssl_ca_file;
+  uint16_t m_web_ssl_verify_depth;
+  bool m_web_ssl_default_verify_paths;
+  std::string m_web_ssl_cipher_list;
+  uint8_t m_web_ssl_protocol_version;
+  bool m_web_ssl_short_trust;
+  long m_web_ssl_cache_timeout;
+
+  /// Worker threads
+  pthread_t m_pthreadSend;
+  pthread_t m_pthreadReceive;
+
+  /// VSCP remote server send interface
+  VscpRemoteTcpIf m_srvRemoteSend;
+
+  /// VSCP remote server receive interface
+  VscpRemoteTcpIf m_srvRemoteReceive;
+
+  // Queue
+  std::list<vscpEvent *> m_sendList;
+  std::list<vscpEvent *> m_receiveList;
+
+  /*!
+      Event object to indicate that there is an event in the output queue
+   */
+  sem_t m_semSendQueue;
+  sem_t m_semReceiveQueue;
+
+  // Mutex to protect the output queue
+  pthread_mutex_t m_mutexSendQueue;
+  pthread_mutex_t m_mutexReceiveQueue;
 };
 
 #endif // !defined(VSCPTCPIPLINK_H__6F5CD90E_ACF7_459A_9ACB_849A57595639__INCLUDED_)

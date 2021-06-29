@@ -8,7 +8,7 @@
             "name": "(gdb) vscp w/ driver",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/home/akhe/development/VSCP/vscp/src/vscp/daemon/linux/vscpd",
+            "program": "/home/akhe/development/VSCP/vscp/build/vscpd",
             "args": ["-s","-c${workspaceFolder}/debug/linux/vscpd.json"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/../vscp",

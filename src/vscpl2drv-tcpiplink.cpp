@@ -7,7 +7,7 @@
 //
 // This file is part of the VSCP (http://www.vscp.org)
 //
-// Copyright (C) 2000-2020 Ake Hedman,
+// Copyright (C) 2000-2021 Ake Hedman,
 // Ake Hedman, Grodans Paradis AB, <akhe@grodansparadis.com>
 //
 // This file is distributed in the hope that it will be useful,
@@ -285,8 +285,9 @@ VSCPRead(long handle, vscpEvent *pEvent, unsigned long timeout)
   vscpEvent *pLocalEvent = pdrvObj->m_receiveList.front();
   pdrvObj->m_receiveList.pop_front();
   pthread_mutex_unlock(&pdrvObj->m_mutexReceiveQueue);
-  if (NULL == pLocalEvent)
+  if (NULL == pLocalEvent) {
     return CANAL_ERROR_MEMORY;
+  }
 
   vscp_copyEvent(pEvent, pLocalEvent);
   vscp_deleteEvent(pLocalEvent);

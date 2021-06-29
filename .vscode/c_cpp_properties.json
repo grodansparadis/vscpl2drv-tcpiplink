@@ -33,13 +33,15 @@
                 "/usr/local/include",
                 "/usr/include/x86_64-linux-gnu",
                 "/usr/include",
+                "${workspaceRoot}/../vscp/src/common/",
+                "${workspaceRoot}/../vscp/src/common/third_party",
+                "${workspaceRoot}/../vscp/src/common/third_party/nlohmann",
+                "${workspaceRoot}/../vscp/src/common/third_party/spdlog-1.8.5/include",
                 "${workspaceRoot}/../vscp/src/vscp/common/",
                 "/usr/local/include",
                 "${workspaceRoot}",
                 "${workspaceFolder}/src/",
-                "${workspaceFolder}/man",
-                "${workspaceFolder}/windows",
-                
+                "${workspaceFolder}/man"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
@@ -52,11 +54,14 @@
                     "/usr/include/x86_64-linux-gnu",
                     "/usr/include",
                     "/usr/local/include",
+                    "${workspaceRoot}/../vscp/src/common/",
+                    "${workspaceRoot}/../vscp/src/common/third_party",
+                    "${workspaceRoot}/../vscp/src/common/third_party/nlohmann",
+                    "${workspaceRoot}/../vscp/src/common/third_party/spdlog-1.8.5/include",
                     "${workspaceRoot}/../vscp/src/vscp/common/",
                     "${workspaceRoot}",
                     "${workspaceFolder}/src/",
-                    "${workspaceFolder}/man",
-                    "${workspaceFolder}/windows"
+                    "${workspaceFolder}/man"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""

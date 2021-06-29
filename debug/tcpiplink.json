@@ -1,5 +1,5 @@
 {
-  "debug" : false,
+  "debug" : true,
   "write" : false,
   "key-file": "/var/vscp/vscp.key",
   "encryption" : "none|aes128|aes192|aes256",
@@ -15,7 +15,7 @@
     "file-log-max-files": 7
   }, 
   "remote" : {
-    "host" : "localhost",
+    "host" : "192.168.1.7",
     "port" : 9598,
     "user" : "admin",
     "password" : "secret",

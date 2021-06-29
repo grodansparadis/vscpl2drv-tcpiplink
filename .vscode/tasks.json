@@ -4,7 +4,7 @@
         {
             "taskName": "build vscpl2drv-tcpiplink",
             "type": "shell",
-            "command": "make",
+            "command": "cd build; cmake .. -DCMAKE_BUILD_TYPE=Debug; make",
             "args": [],
             "group": {
                 "kind": "build",
@@ -15,7 +15,7 @@
         {
             "taskName": "clean & build vscpl2drv-tcpiplink",
             "type": "shell",
-            "command": "make clean; make",
+            "command": "mkdir build; cd build; rm CMakeCache.txt; cmake --clean-first .. -DCMAKE_BUILD_TYPE=Debug; make clean; make",
             "args": [],
             "group": {
                 "kind": "build",
@@ -37,7 +37,7 @@
         {
             "taskName": "build debian package",
             "type": "shell",
-            "command": "./build_debian_package.sh",
+            "command": "cd build; cpack",
             "args": [],
             "group": {
                 "kind": "build",
