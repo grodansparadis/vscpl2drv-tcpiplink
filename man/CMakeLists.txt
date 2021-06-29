@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 project(man LANGUAGES CXX C)
 set(PACKAGE_AUTHOR "Ake Hedman, the VSCP Project")
 
+# --- System Libraries ---
+include(GNUInstallDirs)
+
 set(PANDOCCOMMAND_FOUND 0)
 find_program(PANDOCCOMMAND_PATH
   NAMES pandoc
@@ -33,5 +36,5 @@ endif()
 
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/vscpl2drv-tcpiplink.1
-  DESTINATION share/man/man1
+  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1/
 )
