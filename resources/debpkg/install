@@ -1,0 +1,2 @@
+linux/vscpl2drv-tcpiplink.so /var/lib/vscp/drivers/level2/
+install-files/vscpl2drv-tcpiplink.conf /var/lib/vscp/vscpd

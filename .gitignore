@@ -37,7 +37,5 @@ linux/test
 dist/
 
 # misc
-autom4te.cache/
-config.log
-config.status
-config.h.in~
+build
+man/build

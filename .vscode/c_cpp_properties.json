@@ -36,10 +36,9 @@
                 "/usr/include",
                 "/usr/local/include",
                 "${workspaceRoot}",
-                "${workspaceFolder}/common",
-                "${workspaceFolder}/vscp/src/common",
-                "${workspaceFolder}/vscp/src/vscp/common",
-                "${workspaceFolder}/linux"
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/man",
+                "${workspaceFolder}/windows"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
@@ -48,16 +47,15 @@
                     "/usr/include/c++/7",
                     "/usr/include/x86_64-linux-gnu/c++/7",
                     "/usr/include/c++/7/backward",
-                    "/usr/lib/gcc/x86_64-linux-gnu/7/include",
-                    "/usr/local/include",
+                    "/usr/lib/gcc/x86_64-linux-gnu/7/include",                    
                     "/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed",
                     "/usr/include/x86_64-linux-gnu",
                     "/usr/include",
                     "/usr/local/include",
-                    "${workspaceFolder}/common",
-                    "${workspaceFolder}/vscp/src/common",
-                    "${workspaceFolder}/vscp/src/vscp/common",
-                    "${workspaceFolder}/linux"
+                    "${workspaceRoot}",
+                    "${workspaceFolder}/src/",
+                    "${workspaceFolder}/man",
+                    "${workspaceFolder}/windows"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
