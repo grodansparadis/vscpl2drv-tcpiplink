@@ -27,7 +27,7 @@ You also need to set up the configuration file for the driver. If you don't need
 
 If you need to do dynamic configuration (**write** enabled) we recommend that you create the file in the _/var/lib/vscp/_ folder or any location you find to be convenient.
 
-A sample configuration file is available in _/usr/share/vscp/drivers/level2/vscpl2drv-tcpiplink_ folder after installation. The sample configuration file is named tcpiplink.json.
+A sample configuration file is available in _/usr/share/vscpl2drv-tcpiplink_ folder after installation. The sample configuration file is named tcpiplink.json.
 
 ## Install the driver on Windows
 tbd
@@ -67,12 +67,14 @@ Now go into the repository and build the driver
 cd vscpl2drv-tcpiplink
 mkdir build
 cd build
-cmake ..
+cmake .. -DCMAKE_INSTALL_PREFIX=/
 make
 sudo make install
 ```
 
-If uou want to generate binary packages issue
+Skip _"-DCMAKE_INSTALL_PREFIX=/"_ if you want the _"local"_ prefix to all install paths except for the driver.
+
+If you want to generate binary packages issue
 
 ```bash
 sudo cpack
@@ -264,23 +266,28 @@ If you never intend to change driver parameters during runtime consider moving t
 ##### guid
 All level II drivers must have a unique GUID. There is many ways to obtain this GUID, Read more [here](https://grodansparadis.gitbooks.io/the-vscp-specification/vscp_globally_unique_identifiers.html).
 
-##### remote-host
+##### **remote**
+
+###### host
 Remote VSCP tcp/ip link interface host to connect to. IP address or name.
 
-##### remote-port
+###### port
 Port to connect to on VSCP tcp/ip link interface on remote host. Default is 9598.
 
-##### remote-user
+###### user
 Username to login as on VSCP tcp/ip link interface on remote host.
 
-##### remote-password
+###### password
 Password to use on VSCP tcp/ip link interface remote host.
 
-##### response-timeout
+###### response-timeout
 Response timeout in milliseconds. Connection will be restarted if this expires.
 
-##### filter
-Filter and mask is a way to select which events is received by the driver. A filter have the following format
+##### **tls** 
+Transport layer security, SSL settings for link. Currently not used.
+
+###### in-filter
+Receiving filter. Filter and mask is a way to select which events is received by the driver. A filter have the following format
 
 > priority,vscpclass,vscptype,guid
 
@@ -294,8 +301,8 @@ Read the [vscpd manual](http://grodansparadis.github.io/vscp/#/) for more inform
 
 The default filter/mask pair means that all events are received by the driver.
 
-##### mask
-Filter and mask is a way to select which events is received by the driver. A mask have the following format
+###### in-mask
+Receiving mask. Filter and mask is a way to select which events is received by the driver. A mask have the following format
 
 > priority,vscpclass,vscptype,guid
 
@@ -311,8 +318,92 @@ Read the vscpd manual for more information about how filter/masks work.
 
 The default filter/mask pair means that all events are received by the driver.
 
+###### out-filter
+Filter for transmitted data. For more information see _in-filter_ above.
+
+###### out-mask
+Mask for transmitted data. For more information see _in-mask_ above.
+
 ### Windows
 See information from Linux. The only difference is the disk location from where configuration data is fetched.
 
+## Security considerations
+
+### Configuration file
+
+The configuration file for the driver holds host address, username and password for the remote host in un-encrypted form. It therefore must be protected by making it readable only by the person and tools that are allowed to do so. It is recommended to have read rights only for the _vscp_ user on this file.
+
+### TLS/SSL
+
+As TLS/SSL is not supported yet (it will be) in this driver it is important to understand that if used in an open environment like the internet it is not secure. People listening on the traffic can see both data and username/password credentials. It is therefore important to use the driver in a controlled environment and as early as possible move the flow of events to a secure environment like MQTT with TLS activated. This is often not a problem in a local cable based environment but is definitly a problem using wireless transmission that lack encryption.
+
+A solution is to use a SSL wrapper like [this one](https://github.com/cesanta/ssl_wrapper). 
+
 ## Using the vscpl2drv-tcpiplink driver
+
+The tcp/ip link driver is useful when you want to link a device that export a [VSCP tcp/ip link interface](https://grodansparadis.github.io/vscp-doc-spec/#/./vscp_tcpiplink). This includes the VSCP daemon software pre version 15 and the VSCP daemon with the [vscl2drv-tcpipsrv](https://github.com/grodansparadis/vscpl2drv-tcpipsrv) driver installed.
+
+More typical the device that export the interface is some other softwarebased solution or a tcp/ip enabled lower end device. What you need is the host address, the port and the username/password needed to login to the host.
+
+The driver can be setup to subscribe to as many MQTT topics as you want. All VSCP event payload types are supported (JSON, XML,string and binary) and you can use _auto_ to let the driver interpret the payload for you. Sending MQTT message payloads containing VSCP events to any of these topics will be result in them being transferred to the remote host if not filtered away by the send filter.
+
+The driver can also publish incoming events to any number of topics. [Topic escapes](https://grodansparadis.github.io/vscp/#/./publishing_server?id=publishing-server-topic-escapes) can be used as for any topic used in the VSCP environment. Typically is to publish to a topic looking something like
+
+```
+vscp/{{guid}}/{{class}}/{{type}}/{{nickname}}
+```
+
+Before the event is published the topics content will be altered
+
+ * {{guid}} will be replaces by the events GUID. You can use {{srvguid}} to set the server GUID here ot {{ifguid}} to set the drivers GUID.
+ * {{class}} will be replaced by the VSCP class for the event. If you prefer it to be expressed as as a hexadecimal number you can use {{xclass}} instead. You can even get the symbolic token by using {{class-token}}.
+ * {{type}} will be replaced by the VSCP type for the event. If you prefer it to be expressed as as a hexadecimal number you can use {{xtype}} instead. You can even get the symbolic token by using {{type-token}}.
+ * {{nickname}} will be replaced by the two least significant bytes of the event GUID and form an unsigned integer (big-endian as always for VSCP).
+
+ There are endless possibilities here and it gives flexible ways to subscribe to MQTT based events. For example
+
+ If one want everything from a specific device one subscribe to the GUID of the device. Like this
+
+ ```
+ vscp/FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:C9:69:7A:00:02/#
+ ```
+
+ will subscribe to all events from the device with GUID _FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:C9:69:7A:00:02_
+
+To limit to just measurements from this device one can subscribe to
+
+```
+vscp/FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:C9:69:7A:00:02/10/#
+```
+
+or all measurements from alla devices
+
+```
+vscp/+/10/#
+```
+
+Or all temperature measurements
+
+```
+vscp/+/10/6/#
+```
+
+or all temperature measurements from a specific device
+
+```
+vscp/FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:C9:69:7A:00:02/10/#
+```
+you probably understand the flexibility this introduces now.
+
+This is how this looks in the real world for temperature measurements from a device
+
+![](./images/temp_escaped_events.png)
+
+## Other sources with information
+
+  * The VSCP site - https://www.vscp.org
+  * The VSCP document site - https://docs.vscp.org/
+  * VSCP discussions - https://github.com/grodansparadis/vscp/discussions
+
+
 
