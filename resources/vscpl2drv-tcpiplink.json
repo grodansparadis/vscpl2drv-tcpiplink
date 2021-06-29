@@ -1,0 +1,43 @@
+{
+  "debug" : "false",
+  "write" : "false",
+  "key-file": "/var/vscp/.key",
+  "encryption" : "none|aes128|aes192|aes256",
+  "logging": {
+    "console-enable": true,
+    "console-level": "trace",
+    "console-pattern": "[vcpl2drv-tcpiplink] [%^%l%$] %v",
+    "file-enable": true,
+    "file-log-level": "debug",
+    "file-log-path" : "/var/log/vscp/vscpl1drv-tcpiplink.log",
+    "file-log-pattern": "[vcpl2drv-tcpiplink] [%^%l%$] %v",
+    "file-log-max-size": 50000,
+    "file-log-max-files": 7
+  }, 
+  "remote" : {
+    "host" : "localhost",
+    "port" : 9598,
+    "user" : "admin",
+    "password" : "secret",
+    "response-timeout": 0
+  },
+  "tls": {
+    "certificate" : "/srv/vscp/certs/tcpip_server.pem",
+    "certificate-chain" : "",
+    "verify-peer" : false,
+    "ca-path" : "",
+    "ca-file" : "",
+    "verify-depth" : 9,
+    "default-verify-paths" : true,
+    "cipher-list" : "DES-CBC3-SHA:AES128-SHA:AES128-GCM-SHA256",
+    "protocol-version" : 3,
+    "ssl_cache_timeout": -1,
+    "short-trust" : false
+  },
+  "filter" : {
+    "in-filter" : "incoming filter on string form",
+    "in-mask" : "incoming mask on string form",
+    "out-filter" : "outgoing filter on string form",
+    "out-mask" : "outgoing mask on string form"
+  }
+}

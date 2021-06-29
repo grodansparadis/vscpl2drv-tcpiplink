@@ -1,7 +1,0 @@
-vscpl2drv-tcpiplink.so for Debian
--------------------------------
-
-This is a driver for the VSCP & Friends package that can link a vscp daemon 
-with another vwscp daemon
-
- -- Ake Hedman <akhe@grodansparadis.com>  Thu, 26 Sep 2019 16:00:01 +0200
