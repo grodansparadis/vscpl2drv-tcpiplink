@@ -337,7 +337,71 @@ The configuration file for the driver holds host address, username and password 
 
 As TLS/SSL is not supported yet (it will be) in this driver it is important to understand that if used in an open environment like the internet it is not secure. People listening on the traffic can see both data and username/password credentials. It is therefore important to use the driver in a controlled environment and as early as possible move the flow of events to a secure environment like MQTT with TLS activated. This is often not a problem in a local cable based environment but is definitly a problem using wireless transmission that lack encryption.
 
-A solution is to use a SSL wrapper like [this one](https://github.com/cesanta/ssl_wrapper). 
+A solution is to use a SSL wrapper like [this one](https://github.com/cesanta/ssl_wrapper).
+
+##### ssl_certificate
+Path to SSL certificate file. This option is only required when at least one of the listening_ports is SSL The file must be in PEM format, and it must have both private key and certificate, see for example ssl_cert.pem. If this option is set, then the webserver serves SSL connections on the port set up to listen on.
+
+**Default**: /srv/vscp/certs/server.pem
+
+##### ssl_certificate_chain
+T.B.D.
+
+##### ssl_verify_peer
+Enable client's certificate verification by the server.
+
+**Default**: false
+
+##### ssl_ca_path
+Name of a directory containing trusted CA certificates for peers. Each file in the directory must contain only a single CA certificate. The files must be named by the subject name’s hash and an extension of “.0”. If there is more than one certificate with the same subject name they should have extensions ".0", ".1", ".2" and so on respectively.
+
+##### ssl_ca_file"
+Path to a .pem file containing trusted certificates for peers. The file may contain more than one certificate.
+
+##### ssl_verify_depth
+Sets maximum depth of certificate chain. If client's certificate chain is longer than the depth set here connection is refused.
+
+**Default**: 9
+
+##### ssl_default_verify_paths
+Loads default trusted certificates locations set at openssl compile time.
+
+**Default**: true
+
+##### ssl_cipher_list
+List of ciphers to present to the client. Entries should be separated by colons, commas or spaces.
+
+| Selection	| Description |
+| ========= | =========== |
+| ALL |	All available ciphers |
+| ALL:!eNULL | All ciphers excluding NULL ciphers |
+| AES128:!MD5 | AES 128 with digests other than MD5 |
+
+See [this entry in OpenSSL documentation](https://www.openssl.org/docs/manmaster/apps/ciphers.html) for full list of options and additional examples.
+
+**Default**: "DES-CBC3-SHA:AES128-SHA:AES128-GCM-SHA256",
+
+##### ssl_protocol_version
+Sets the minimal accepted version of SSL/TLS protocol according to the table:
+
+| Selected protocols | setting |
+| ================== | ======= |
+| SSL2+SSL3+TLS1.0+TLS1.1+TLS1.2 | 0 |
+| SSL3+TLS1.0+TLS1.1+TLS1.2 | 1 |
+| TLS1.0+TLS1.1+TLS1.2 | 2 |
+| TLS1.1+TLS1.2	| 3 |
+| TLS1.2 | 4 |
+
+**Default**: 4.
+
+##### ssl_short_trust
+Enables the use of short lived certificates. This will allow for the certificates and keys specified in ssl_certificate, ssl_ca_file and ssl_ca_path to be exchanged and reloaded while the server is running.
+
+In an automated environment it is advised to first write the new pem file to a different filename and then to rename it to the configured pem file name to increase performance while swapping the certificate.
+
+Disk IO performance can be improved when keeping the certificates and keys stored on a tmpfs (linux) on a system with very high throughput.
+
+**Default**: false 
 
 ## Using the vscpl2drv-tcpiplink driver
 

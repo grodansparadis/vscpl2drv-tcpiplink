@@ -78,31 +78,59 @@
                 "path" : "/var/lib/vscp/drivers/level1/vscpl1drv-logger.so",
                 "guid" : "FF:FF:FF:FF:FF:FF:FF:F5:01:00:00:00:00:00:00:01",
 
-                "mqtt" : {
-                    "host" : "127.0.0.1",
-                    "port" : 1883,
-                    "user" : "vscp",
-                    "password": "secret",
-                    "clientid" : "mosq-l1drv-logger",
-                    "format" : "json",
-                    "qos" : 0,
-                    "bcleansession" : false,
-                    "bretain" : false,
-                    "keepalive" : 60,
-                    "reconnect-delay" : 2,
-                    "reconnect-delay-max" : 10,
-                    "reconnect-exponential-backoff" : false,
-                    "cafile" : "",
-                    "capath" : "",
-                    "certfile" : "",
-                    "keyfile" : "",
-                    "pwkeyfile" : "",
-                    "subscribe" : [
-                        "vscp/{{guid}}/#"
-                    ],
-                    "publish" : [
-                        "vscp/{{guid}}/->/{{class}}/{{type}}/{{nodeid}}"
-                    ]
+                "mqtt": {
+                  "bind": "",
+                  "host": "192.168.1.7",
+                  "port": 1883,
+                  "mqtt-options": {
+                    "tcp-nodelay": true,
+                    "protocol-version": 311,
+                    "receive-maximum": 20,
+                    "send-maximum": 20,
+                    "ssl-ctx-with-defaults": 0,
+                    "tls-ocsp-required": 0,
+                    "tls-use-os-certs": 0
+                  },
+                  "user": "vscp",
+                  "password": "secret",
+                  "clientid": "the-vscp-daemon",
+                  "publish-format": "json",
+                  "subscribe-format": "auto",
+                  "qos": 1,
+                  "bcleansession": false,
+                  "bretain": false,
+                  "keepalive": 60,
+                  "bjsonmeasurementblock": true,
+                  "reconnect": {
+                    "delay": 2,
+                    "delay-max": 10,
+                    "exponential-backoff": false
+                  },
+                  "tls": {
+                    "cafile": "",
+                    "capath": "",
+                    "certfile": "",
+                    "keyfile": "",
+                    "pwkeyfile": "",
+                    "no-hostname-checking": true,
+                    "cert-reqs": 0,
+                    "version": "",
+                    "ciphers": "",
+                    "psk": "",
+                    "psk-identity": ""
+                  },
+                  "will": {
+                    "topic": "vscp-daemon/{{srvguid}}/will",
+                    "qos": 1,
+                    "retain": true,
+                    "payload": "VSCP Daemon is down"
+                  },
+                  "subscribe" : [
+                      "vscp/{{guid}}/#"
+                  ],
+                  "publish" : [
+                      "vscp/{{guid}}/->/{{class}}/{{type}}/{{nodeid}}"
+                  ]
                 }
             }
         ],
