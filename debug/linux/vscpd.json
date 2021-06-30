@@ -137,9 +137,6 @@
                   "bretain": false,
                   "keepalive": 60,
                   "bjsonmeasurementblock": true,
-                  "topic-daemon-base": "vscp-daemon/{{guid}}/",
-                  "topic-drivers": "drivers",
-                  "topic-discovery": "discovery",
                   "reconnect": {
                     "delay": 2,
                     "delay-max": 10,
