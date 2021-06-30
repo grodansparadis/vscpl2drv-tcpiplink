@@ -2,9 +2,11 @@
 
 <img src="https://vscp.org/images/logo.png" width="100">
 
-    Available for: Linux, Windows
-    Driver Linux: libvscpl2drv-tcpiplink.so
-    Driver Windows: vscpl2drv-tcpiplink.dll
+  * **Available for**: Linux, Windows
+  * **Driver Linux**: libvscpl2drv-tcpiplink.so
+  * **Driver Windows**: vscpl2drv-tcpiplink.dll
+
+---
 
 The VSCP tcp/ip link driver can send/receive events to/from a remote VSCP tcp/ip link interface with automatic reconnection and security. The remote node is normally a high level VSCP hardware device or a VSCP daemon, either a pre version 15 with built in tcp/ip interface or a version >=15 with the [vscpl2drv-tcpipsrv](https://github.com/grodansparadis/vscpl2drv-tcpipsrv) driver installed.
 
