@@ -12,6 +12,8 @@ The driver will try to hold a connection open even if the remote node disconnect
 
 The VSCP tcp/ip link protocol is described [here](https://grodansparadis.github.io/vscp-doc-spec/#/./vscp_tcpiplink).
 
+With the simple interface the driver uses ([described here](https://grodansparadis.github.io/vscp/#/level_ii_drivers)) it is also possible to use it with other software as a component.
+
 ## Install the driver on Linux
 You can find binary installation files [here](https://github.com/grodansparadis/vscpl2drv-tcpiplink/releases)
 
