@@ -67,4 +67,4 @@ jobs:
       with:
         name: ${{ matrix.os }}_vscpl2drv-tcpiplink_15.0.0.deb
         path: /home/runner/work/vscpl2drv-tcpiplink/vscpl2drv-tcpiplink/build/vscpl2drv-tcpiplink_15.0.0.deb
-        retention-days: 30
+        retention-days: 3
