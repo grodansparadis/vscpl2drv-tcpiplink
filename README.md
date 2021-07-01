@@ -515,5 +515,9 @@ This is how this looks in the real world for temperature measurements from a dev
   * The VSCP document site - https://docs.vscp.org/
   * VSCP discussions - https://github.com/grodansparadis/vscp/discussions
 
+---
+
+## Copyright
+Copyright (C) 2000-2021 Åke Hedman, The VSCP Project - MIT license.
 
 
