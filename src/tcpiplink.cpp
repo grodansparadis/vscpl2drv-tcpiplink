@@ -334,7 +334,8 @@ CTcpipLink::close(void)
     return;
 
   m_bQuit = true; // terminate the thread
-  sleep(1);       // Give the thread some time to terminate
+  pthread_join(m_pthreadSend, NULL);
+  pthread_join(m_pthreadReceive, NULL);
 }
 
 // ----------------------------------------------------------------------------

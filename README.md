@@ -270,6 +270,48 @@ If you never intend to change driver parameters during runtime consider moving t
 ##### guid
 All level II drivers must have a unique GUID. There is many ways to obtain this GUID, Read more [here](https://grodansparadis.gitbooks.io/the-vscp-specification/vscp_globally_unique_identifiers.html).
 
+###### **LoggingÄÄ
+
+Options for driver logging is set here.
+
+###### console-enable 
+Set to _true_ to log to the console.
+
+###### console-level
+Logging level for console log. Set to one of "off | critical | error | warn | info | debug | trace". 
+
+###### console-pattern
+The logging pattern for the console. The default is
+
+```
+"[vcpl2drv-tcpiplink] [%^%l%$] %v"
+```
+Patterns are described [here](https://spdlog.docsforge.com/v1.x/3.custom-formatting/#pattern-flags).
+
+###### file-enable 
+Set to _true_ to log to the console.
+
+###### file-level
+Set to one of "off | critical | error | warn | info | debug | trace" to set log level.
+
+#### file-path" : "path to log file",
+This is a writable path to a file that will get log information written to it. This can be a valuable to have if things does not behave as expected.
+
+###### file-pattern
+The logging pattern for the console. The default is
+
+```
+"[vcpl2drv-tcpiplink] [%^%l%$] %v"
+```
+Patterns are described [here](https://spdlog.docsforge.com/v1.x/3.custom-formatting/#pattern-flags).
+
+###### file-max-size
+Max size for log file before it will rotate and a new file is created. Default is 5 Mb.
+
+###### file-max-files
+Max number of log files to keep. Default is 7
+
+
 ##### **remote**
 
 ###### host

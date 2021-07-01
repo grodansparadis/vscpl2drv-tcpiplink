@@ -1,4 +1,5 @@
 Change log for vscpl2drv-tcpiplink
 ==================================
 
+210701 akhe Now do proper join to worker threads on close
 210629 akhe Version 15.0.0 released
