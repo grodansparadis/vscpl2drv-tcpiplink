@@ -50,7 +50,7 @@
                     "/usr/include/c++/10",
                     "/usr/include/x86_64-linux-gnu/c++/10",
                     "/usr/include/c++/10/backward",
-                    "/usr/lib/gcc/x86_64-linux-gnu/10/include",                    
+                    "/usr/lib/gcc/x86_64-linux-gnu/10/include",
                     "/usr/include/x86_64-linux-gnu",
                     "/usr/include",
                     "/usr/local/include",
@@ -68,7 +68,8 @@
             },
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
-            "cppStandard": "c++17"
+            "cppStandard": "c++17",
+            "configurationProvider": "nrf-connect"
         },
         {
             "name": "Win32",
