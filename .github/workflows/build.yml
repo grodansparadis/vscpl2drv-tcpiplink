@@ -51,7 +51,7 @@ jobs:
       run: sudo apt-get update
 
     - name: Install libexpat-dev manually
-      run: sudo apt-get install libexpat-dev pandoc
+      run: sudo apt-get install libexpat-dev pandoc libcurl4-openssl-dev
       
     - name: Install support libssl
       run: sudo apt install git libssl-dev libexpat-dev libz-dev
