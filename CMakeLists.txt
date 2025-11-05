@@ -299,7 +299,7 @@ if (WIN32)
     third_party/vscp/src/vscp/common/  
     third_party/vscp/src/common
     third_party/vscp/src/common/third_party
-    third_party/nlohmann
+    third_party/nlohmann/include
     third_party/spdlog/include
     third_party/Mustache
     third_party/maddy/include/
@@ -313,7 +313,7 @@ else()
     third_party/vscp/src/vscp/common/  
     third_party/vscp/src/common
     third_party/vscp/src/common/third_party
-    third_party/nlohmann
+    third_party/nlohmann/include
     third_party/spdlog/include
     third_party/Mustache
     third_party/maddy/include/

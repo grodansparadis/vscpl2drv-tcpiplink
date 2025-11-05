@@ -24,10 +24,10 @@
 //
 
 #define MAJOR_VERSION       15
-#define MINOR_VERSION       0
+#define MINOR_VERSION       1
 #define RELEASE_VERSION     0
 #define BUILD_VERSION       0
 
-#define DISPLAY_VERSION "15.0.0.0"
-#define COPYRIGHT       "Copyright (c) 2000-2021 Ake Hedman, the VSCP Project"
-#define COPYRIGHT_HTML  "Copyright (c) 2000-2021 Ake Hedman, the VSCP Project"
+#define DISPLAY_VERSION "15.1.0.0"
+#define COPYRIGHT       "Copyright (c) 2000-2025 Ake Hedman, the VSCP Project"
+#define COPYRIGHT_HTML  "Copyright (c) 2000-2025 Ake Hedman, the VSCP Project"
