@@ -52,8 +52,8 @@
 #include <hlo.h>
 #include <remotevariablecodes.h>
 #include <vscp.h>
-#include <vscp_class.h>
-#include <vscp_type.h>
+#include <vscp-class.h>
+#include <vscp-type.h>
 #include <vscpdatetime.h>
 #include <vscphelper.h>
 #include <vscpremotetcpif.h>
@@ -67,7 +67,7 @@
 // Buffer for XML parser
 #define XML_BUFF_SIZE 50000
 
-#include <json.hpp> // Needs C++11  -std=c++11
+#include <nlohmann/json.hpp> // Needs C++11  -std=c++11
 #include <mustache.hpp>
 
 #include <spdlog/async.h>

@@ -1,0 +1,21 @@
+[submodule "third_party/json"]
+	path = third_party/json
+	url = https://github.com/nlohmann/json.git
+[submodule "third_party/Mustache"]
+	path = third_party/Mustache
+	url = https://github.com/kainjow/Mustache.git
+[submodule "third_party/crypto-algorithms"]
+	path = third_party/crypto-algorithms
+	url = https://github.com/B-Con/crypto-algorithms.git
+[submodule "third_party/vscp"]
+	path = third_party/vscp
+	url = https://github.com/grodansparadis/vscp.git
+[submodule "third_party/mongoose"]
+	path = third_party/mongoose
+	url = https://github.com/cesanta/mongoose.git
+[submodule "third_party/spdlog"]
+	path = third_party/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "third_party/maddy"]
+	path = third_party/maddy
+	url = https://github.com/progsource/maddy.git

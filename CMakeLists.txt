@@ -2,7 +2,7 @@
 #
 # Build instructions for VSCP Works.
 #
-# Copyright (c) 2000-2021 Åke Hedman, the VSCP Project
+# Copyright (c) 2000-2025 Åke Hedman, the VSCP Project
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -207,38 +207,36 @@ add_library(vscpl2drv-tcpiplink
   ${CMAKE_SOURCE_DIR}/src/vscpl2drv-tcpiplink.cpp
   ${CMAKE_SOURCE_DIR}/src/tcpiplink.h
   ${CMAKE_SOURCE_DIR}/src/tcpiplink.cpp
-  ${VSCP_PATH}/src/vscp/common/userlist.h
-  ${VSCP_PATH}/src/vscp/common/userlist.cpp
-  ${VSCP_PATH}/src/vscp/common/clientlist.h
-  ${VSCP_PATH}/src/vscp/common/clientlist.cpp    
-  ${VSCP_PATH}/src/common/third_party/mustache.hpp
-  ${VSCP_PATH}/src/common/third_party/spdlog-1.9.2/include
-  ${VSCP_PATH}/src/vscp/common/vscp.h
-  ${VSCP_PATH}/src/vscp/common/vscpremotetcpif.h
-  ${VSCP_PATH}/src/vscp/common/vscpremotetcpif.cpp
-  ${VSCP_PATH}/src/vscp/common/vscpdatetime.h
-  ${VSCP_PATH}/src/vscp/common/vscpdatetime.cpp
-  ${VSCP_PATH}/src/vscp/common/guid.h
-  ${VSCP_PATH}/src/vscp/common/guid.cpp
-  ${VSCP_PATH}/src/vscp/common/mdf.h
-  ${VSCP_PATH}/src/vscp/common/mdf.cpp
-  ${VSCP_PATH}/src/vscp/common/vscphelper.h
-  ${VSCP_PATH}/src/vscp/common/vscphelper.cpp
-  ${VSCP_PATH}/src/vscp/common/canal.h
-  ${VSCP_PATH}/src/common/sockettcp.h
-  ${VSCP_PATH}/src/common/sockettcp.c
-  ${VSCP_PATH}/src/common/vscpbase64.h
-  ${VSCP_PATH}/src/common/vscpbase64.c
-  ${VSCP_PATH}/src/common/vscp_aes.h
-  ${VSCP_PATH}/src/common/vscp_aes.c
-  ${VSCP_PATH}/src/common/crc.h
-  ${VSCP_PATH}/src/common/crc.c
-  ${VSCP_PATH}/src/common/crc8.h
-  ${VSCP_PATH}/src/common/crc8.c
-  ${VSCP_PATH}/src/common/vscpmd5.h
-  ${VSCP_PATH}/src/common/vscpmd5.c
-  ${VSCP_PATH}/src/common/fastpbkdf2.h
-  ${VSCP_PATH}/src/common/fastpbkdf2.c
+  third_party/vscp/src/vscp/common/userlist.h
+  third_party/vscp/src/vscp/common/userlist.cpp
+  third_party/vscp/src/vscp/common/clientlist.h
+  third_party/vscp/src/vscp/common/clientlist.cpp
+  third_party/Mustache/mustache.hpp
+  third_party/spdlog/include
+  third_party/vscp/src/vscp/common/vscp.h
+  third_party/vscp/src/vscp/common/vscpremotetcpif.h
+  third_party/vscp/src/vscp/common/vscpremotetcpif.cpp
+  third_party/vscp/src/vscp/common/vscpdatetime.h
+  third_party/vscp/src/vscp/common/vscpdatetime.cpp
+  third_party/vscp/src/vscp/common/guid.h
+  third_party/vscp/src/vscp/common/guid.cpp
+  third_party/vscp/src/vscp/common/mdf.h
+  third_party/vscp/src/vscp/common/mdf.cpp
+  third_party/vscp/src/vscp/common/vscphelper.h
+  third_party/vscp/src/vscp/common/vscphelper.cpp
+  third_party/vscp/src/vscp/common/canal.h
+  third_party/vscp/src/common/sockettcp.h
+  third_party/vscp/src/common/sockettcp.c
+  third_party/vscp/src/common/vscpbase64.h
+  third_party/vscp/src/common/vscpbase64.c
+  third_party/vscp/src/common/vscp-aes.h
+  third_party/vscp/src/common/vscp-aes.c
+  third_party/vscp/src/common/crc.h
+  third_party/vscp/src/common/crc.c
+  third_party/vscp/src/common/crc8.h
+  third_party/vscp/src/common/crc8.c
+  third_party/vscp/src/common/vscpmd5.h
+  third_party/vscp/src/common/vscpmd5.c
 ) 
 
 if (WIN32)    
@@ -246,11 +244,13 @@ if (WIN32)
   find_path(PTHREAD_INCLUDE_DIR pthread.h)
 
   include_directories( PUBLIC src/
-    ${VSCP_PATH}/src/vscp/common/  
-    ${VSCP_PATH}/src/common
-    ${VSCP_PATH}/src/common/third_party
-    ${VSCP_PATH}/src/common/third_party/nlohmann
-    ${VSCP_PATH}/src/common/third_party/spdlog-1.9.2/include
+    third_party/vscp/src/vscp/common/  
+    third_party/vscp/src/common
+    third_party/vscp/src/common/third_party
+    third_party/nlohmann
+    third_party/spdlog/include
+    third_party/Mustache
+    third_party/maddy/include/
     ${PThreads4W_INCLUDE_DIR}
     ${CMAKE_BINARY_DIR}
     ${OPENSSL_INCLUDE_DIR}
@@ -258,11 +258,13 @@ if (WIN32)
     ${LOCAL_SYSLOG_INCLUDE} )
 else()
   include_directories( PUBLIC src/
-    ${VSCP_PATH}/src/vscp/common/
-    ${VSCP_PATH}/src/common
-    ${VSCP_PATH}/src/common/third_party
-    ${VSCP_PATH}/src/common/third_party/nlohmann
-    ${VSCP_PATH}/src/common/third_party/spdlog-1.9.2/include
+    third_party/vscp/src/vscp/common/  
+    third_party/vscp/src/common
+    third_party/vscp/src/common/third_party
+    third_party/nlohmann
+    third_party/spdlog/include
+    third_party/Mustache
+    third_party/maddy/include/
     ${CMAKE_BINARY_DIR}
     ${OPENSSL_INCLUDE_DIR}
     ${LOCAL_SYSLOG_INCLUDE} )
