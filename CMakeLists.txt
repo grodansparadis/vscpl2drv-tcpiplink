@@ -27,19 +27,71 @@
 #
 
 cmake_minimum_required(VERSION 3.5)
-project(vscpl2drv-tcpiplink LANGUAGES CXX C)
+
+# Function to parse version from version.h
+function(parse_version_from_header VERSION_FILE)
+    file(READ "${VERSION_FILE}" VERSION_CONTENT)
+    
+    # Extract MAJOR_VERSION
+    string(REGEX MATCH "#define MAJOR_VERSION[ \t]+([0-9]+)" _ "${VERSION_CONTENT}")
+    set(MAJOR_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
+    
+    # Extract MINOR_VERSION  
+    string(REGEX MATCH "#define MINOR_VERSION[ \t]+([0-9]+)" _ "${VERSION_CONTENT}")
+    set(MINOR_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
+    
+    # Extract RELEASE_VERSION (using as PATCH_VERSION)
+    string(REGEX MATCH "#define RELEASE_VERSION[ \t]+([0-9]+)" _ "${VERSION_CONTENT}")
+    set(PATCH_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
+    
+    # Extract BUILD_VERSION
+    string(REGEX MATCH "#define BUILD_VERSION[ \t]+([0-9]+)" _ "${VERSION_CONTENT}")
+    set(BUILD_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
+    
+    # Extract DISPLAY_VERSION string
+    string(REGEX MATCH "#define DISPLAY_VERSION[ \t]+\"([^\"]+)\"" _ "${VERSION_CONTENT}")
+    set(DISPLAY_VERSION ${CMAKE_MATCH_1} PARENT_SCOPE)
+    
+    message(STATUS "Parsed version from ${VERSION_FILE}: ${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${BUILD_VERSION}")
+endfunction()
+
+# Parse version from src/version.h
+parse_version_from_header("${CMAKE_SOURCE_DIR}/src/version.h")
+
+# Set version for project declaration
+set(PROJECT_VERSION_FOR_CMAKE "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}")
+
+project(vscpl2drv-tcpiplink LANGUAGES CXX C VERSION ${PROJECT_VERSION_FOR_CMAKE})
 set(PACKAGE_AUTHOR "Ake Hedman, the VSCP Project")
 
-# Version settings
-if(NOT DEFINED MAJOR_VERSION)
+# Version settings (now parsed from version.h, but allow override via command line)
+if(NOT DEFINED MAJOR_VERSION OR MAJOR_VERSION STREQUAL "")
     SET(MAJOR_VERSION "15")
 endif()
-if(NOT DEFINED MINOR_VERSION)
+if(NOT DEFINED MINOR_VERSION OR MINOR_VERSION STREQUAL "")
     SET(MINOR_VERSION "0")
 endif()
-if(NOT DEFINED PATCH_VERSION)
+if(NOT DEFINED PATCH_VERSION OR PATCH_VERSION STREQUAL "")
     SET(PATCH_VERSION "0")
 endif()
+
+# Set additional version variables
+set(VERSION_STRING "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}")
+if(DEFINED BUILD_VERSION AND NOT BUILD_VERSION STREQUAL "")
+    set(VERSION_STRING_FULL "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}.${BUILD_VERSION}")
+else()
+    set(VERSION_STRING_FULL "${VERSION_STRING}")
+endif()
+
+# Use DISPLAY_VERSION if available, otherwise construct from components
+if(DEFINED DISPLAY_VERSION AND NOT DISPLAY_VERSION STREQUAL "")
+    set(PROJECT_VERSION "${DISPLAY_VERSION}")
+else()
+    set(PROJECT_VERSION "${VERSION_STRING_FULL}")
+endif()
+
+message(STATUS "Project version: ${PROJECT_VERSION}")
+message(STATUS "Version components: MAJOR=${MAJOR_VERSION} MINOR=${MINOR_VERSION} PATCH=${PATCH_VERSION} BUILD=${BUILD_VERSION}")
 
 # Prevent abi warnings in nlohmann
 SET(GCC_VSCP_COMPILE_FLAGS "-Wno-psabi")
@@ -64,7 +116,7 @@ set(APP_URL "https://github.com/grodansparadis/vscpl2drv-tcpiplink")
 endif()
 
 if(NOT DEFINED APP_VERSION)
-set(APP_VERSION, "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}")
+set(APP_VERSION "${VERSION_STRING}")
 endif()
 
 # Man build and install

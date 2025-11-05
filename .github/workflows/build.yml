@@ -18,6 +18,31 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: 'recursive'
+
+    - name: Parse version from version.h
+      id: version
+      run: |
+        VERSION_MAJOR=$(grep '#define MAJOR_VERSION' src/version.h | awk '{print $3}')
+        VERSION_MINOR=$(grep '#define MINOR_VERSION' src/version.h | awk '{print $3}')
+        VERSION_PATCH=$(grep '#define RELEASE_VERSION' src/version.h | awk '{print $3}')
+        VERSION_BUILD=$(grep '#define BUILD_VERSION' src/version.h | awk '{print $3}')
+        DISPLAY_VERSION=$(grep '#define DISPLAY_VERSION' src/version.h | sed 's/.*"\(.*\)".*/\1/')
+        
+        echo "VERSION_MAJOR=$VERSION_MAJOR" >> $GITHUB_ENV
+        echo "VERSION_MINOR=$VERSION_MINOR" >> $GITHUB_ENV  
+        echo "VERSION_PATCH=$VERSION_PATCH" >> $GITHUB_ENV
+        echo "VERSION_BUILD=$VERSION_BUILD" >> $GITHUB_ENV
+        echo "DISPLAY_VERSION=$DISPLAY_VERSION" >> $GITHUB_ENV
+        echo "VERSION_STRING=${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" >> $GITHUB_ENV
+        
+        echo "Parsed version: $DISPLAY_VERSION"
+        echo "Version components: MAJOR=$VERSION_MAJOR MINOR=$VERSION_MINOR PATCH=$VERSION_PATCH BUILD=$VERSION_BUILD"
+
+    - name: Display parsed version
+      run: |
+        echo "Project version: ${{ env.DISPLAY_VERSION }}"
+        echo "Version string: ${{ env.VERSION_STRING }}"
+        echo "Components: ${{ env.VERSION_MAJOR }}.${{ env.VERSION_MINOR }}.${{ env.VERSION_PATCH }}.${{ env.VERSION_BUILD }}"
      
     - name: Checkout google test repo
       run: sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo mkdir build && cd build && sudo cmake .. && sudo make DESTDIR=/usr/lib
@@ -60,6 +85,6 @@ jobs:
         sudo make install DESTDIR=AppDir
     - uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.os }}_vscpl2drv-tcpiplink_15.0.0.deb
-        path: /home/runner/work/vscpl2drv-tcpiplink/vscpl2drv-tcpiplink/build/vscpl2drv-tcpiplink_15.0.0.deb
+        name: ${{ matrix.os }}_vscpl2drv-tcpiplink_${{ env.VERSION_STRING }}.deb
+        path: /home/runner/work/vscpl2drv-tcpiplink/vscpl2drv-tcpiplink/build/vscpl2drv-tcpiplink_${{ env.VERSION_STRING }}.deb
         retention-days: 3
