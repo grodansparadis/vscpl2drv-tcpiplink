@@ -58,7 +58,7 @@ jobs:
         make -j$(nproc)
         sudo cpack -G DEB 
         sudo make install DESTDIR=AppDir
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.os }}_vscpl2drv-tcpiplink_15.0.0.deb
         path: /home/runner/work/vscpl2drv-tcpiplink/vscpl2drv-tcpiplink/build/vscpl2drv-tcpiplink_15.0.0.deb
