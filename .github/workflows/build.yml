@@ -15,14 +15,9 @@ jobs:
 
     steps:
     # https://github.com/actions/checkout  
-    - uses: actions/checkout@v2
-
-    - name: Checkout vscp repo
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
-        repository: grodansparadis/vscp
-        path: vscp
-        ref: master
+        submodules: 'recursive'
      
     - name: Checkout google test repo
       run: sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo mkdir build && cd build && sudo cmake .. && sudo make DESTDIR=/usr/lib
@@ -53,7 +48,7 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       #run: cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DVSCP_PATH=vscp/
-      run: cmake .. -DCMAKE_INSTALL_PREFIX=/ -DVSCP_PATH=vscp/
+      run: cmake .. -DCMAKE_INSTALL_PREFIX=/ -DVSCP_PATH=third_party/vscp/
 
     - name: Build
       working-directory: ${{github.workspace}}/build
@@ -63,7 +58,7 @@ jobs:
         make -j$(nproc)
         sudo cpack -G DEB 
         sudo make install DESTDIR=AppDir
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os }}_vscpl2drv-tcpiplink_15.0.0.deb
         path: /home/runner/work/vscpl2drv-tcpiplink/vscpl2drv-tcpiplink/build/vscpl2drv-tcpiplink_15.0.0.deb
