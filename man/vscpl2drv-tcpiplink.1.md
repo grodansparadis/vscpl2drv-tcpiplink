@@ -1,98 +1,395 @@
-% vscpl2drv-tcpiplink(1) VSCP Level II Logger Driver
-% Åke Hedmann, Grodans Paradis AB
-% January 02, 2020
+% VSCPL2DRV-TCPIPLINK(1) VSCP Level II driver
+% Åke Hedman, Grodans Paradis AB
+% November 2026
 
 # NAME
 
-vscpl2drv-tcpiplink - VSCP Level I Socketcan Driver
+vscpl2drv-tcpiplink - link to a remote VSCP tcp/ip server
 
 # SYNOPSIS
 
-vscpl2drv-tcpiplink
+**libvscpl2drv-tcpiplink.so** (Linux), **vscpl2drv-tcpiplink.dll** (Windows), **libvscpl2drv-tcpiplink.dylib** (macOS)
+
+A VSCP Level II driver. It is loaded by the VSCP daemon (**vscpd**(8)), VSCP Works or any other program that uses the VSCP Level II driver API, and is configured with the JSON configuration file described below. The path of the configuration file is given to the driver when it is opened (**path-config** in the daemon's driver configuration).
 
 # DESCRIPTION
 
-This driver interface SocketCAN, the official CAN API of the Linux kernel, has been included in the kernel for a long time now. Meanwhile, the official Linux repository has device drivers for all major CAN chipsets used in various architectures and bus types. SocketCAN offers the user a multiuser capable as well as hardware independent socket-based API for CAN based communication and configuration. Socketcan nowadays give access to the major CAN adapters that is available on the market. Note that as CAN only can handle Level I events only events up to class < 1024 can be sent to this device. Other events will be filtered out.
+The VSCP tcp/ip link driver can send/receive events to/from a remote VSCP tcp/ip link interface with automatic reconnection and security. The remote node is normally a high level VSCP hardware device or a VSCP daemon, either a pre version 15 with built in tcp/ip interface or a version >=15 with the [vscpl2drv-tcpipsrv](https://github.com/grodansparadis/vscpl2drv-tcpipsrv) driver installed.
 
-## Configuration
+The driver will try to hold a connection open even if the remote node disconnects. This makes it possible to replace a node or take it down for maintenance and still have the link online again as soon as the node is powered up. 
 
-The *configuration string* is the first configuration data that is read by the driver. The driver will, after it is read and parsed, ask the server for driver specific configuration data. This data is fetched with the same pattern for all drivers. Variables are formed by the driver name + some driver specific remote variable name. If this variable exist and contains data it will be used as configuration for the driver regardless of the content of the configuration string.
+The VSCP tcp/ip link protocol is described [here](https://grodansparadis.github.io/vscp-doc-spec/#/./vscp_tcpiplink).
 
-### Adding the driver to the VSCP daemon.
+With the simple interface the driver uses ([described here](https://grodansparadis.github.io/vscp/#/level_ii_drivers)) it is also possible to use it with other software as a component.
 
-Add the driver to the vscpd configuration file (default location */etc/vscp/vscpd.conf*). THis entry looks the same for all level II drivers.
+# CONFIGURATION
 
-```xml
-<driver enable="true" >
-    <name>socketcan1</name>
-    <path>/usr/lib/vscpl2drv_tcpiplink.so</path>
-    <config>can</config>
-    <guid>FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:0A:11:02:00:00</guid>
-</driver>
+## Linux
+
+### VSCP daemon driver config
+
+The VSCP daemon configuration file is (normally) located at */etc/vscp/vscpd.json* (For the curious: [VSCP daemon full sample config file for Linux](https://github.com/grodansparadis/vscp/blob/master/resources/linux/vscpd.json)). To use the vscpl2drv-tcpiplink.so driver there must be an entry in the drivers level2 section
+
+```json
+"drivers" : {
+  "level2" : [
 ```
 
-* **name** is the name of the driver. Set a name that has some meaning for you.
-* **path** points to the location where the driver is installed.
-* **config** is the configuration string. This string contains configuration  entries separated by semicolon.
-* **guid** is the GUID that should be used to referee to this driver and devices handled by it. If you set a GUID (and you should) the two least significant digits should be set to zero. If absent or not set the VSCP daemon will set a GUID for you.
+with the following format
 
-In the configuration example above the driver will fetch configuration data from the server from variables *socketcan1_interface*, *socketcan1_filter* and  *socketcan1_mask*
+```json
+{
+  "enable" : true,
+  "name" : "tcpiplink",
+  "path-driver" : "/var/lib/vscp/drivers/level2/libvscpl2drv-tcpiplink.so",
+  "path-config" : "/etc/vscp/tcpiplink.json",
+  "guid" : "FF:FF:FF:FF:FF:FF:FF:F5:99:99:00:00:00:00:00:00",
 
-### Configuration string
-
-```bash
-interface
+  "mqtt": {
+    "bind": "",
+    "host": "test.mosquitto.org",
+    "port": 1883,
+    "mqtt-options": {
+      "tcp-nodelay": true,
+      "protocol-version": 311,
+      "receive-maximum": 20,
+      "send-maximum": 20,
+      "ssl-ctx-with-defaults": 0,
+      "tls-ocsp-required": 0,
+      "tls-use-os-certs": 0
+    },
+    "user": "vscp",
+    "password": "secret",
+    "clientid": "the-vscp-daemon",
+    "publish-format": "json",
+    "subscribe-format": "auto",
+    "qos": 1,
+    "bcleansession": false,
+    "bretain": false,
+    "keepalive": 60,
+    "bjsonmeasurementblock": true,
+    "topic-daemon-base": "vscp-daemon/{{guid}}/",
+    "topic-drivers": "drivers",
+    "topic-discovery": "discovery",
+    "reconnect": {
+      "delay": 2,
+      "delay-max": 10,
+      "exponential-backoff": false
+    },
+    "tls": {
+      "cafile": "",
+      "capath": "",
+      "certfile": "",
+      "keyfile": "",
+      "pwkeyfile": "",
+      "no-hostname-checking": true,
+      "cert-reqs": 0,
+      "version": "",
+      "ciphers": "",
+      "psk": "",
+      "psk-identity": ""
+    },
+    "will": {
+      "topic": "vscp-daemon/{{srvguid}}/will",
+      "qos": 1,
+      "retain": true,
+      "payload": "VSCP Daemon is down"
+    },
+    "subscribe" : [
+      {
+        "topic": "remote-vscp/{{guid}}/#",
+        "qos": 0,
+        "v5-options": 0,
+        "format": "auto"
+      }
+    ],
+    "publish" : [
+      {
+        "topic": "vscp/{{guid}}/{{class}}/{{type}}/{{nodeid}}",
+        "qos": 1,
+        "retain": false,
+        "format": "json"
+      }
+    ]
+  }
+}
 ```
 
-#### Interface
+#### enable
+Set enable to "true" if the driver should be loaded by the VSCP daemon.
 
-The parameter interface is the socketcan interface to use. Typically this is can0, can0, can1... Defaults is vcan0, the first virtual interface. If the remote variable **prefix**_interface is available it will be used instead of the configuration value. "**prefix**" is the name given to the driver in *vscpd.conf*
+#### name
+This is the name of the driver. Used when referring to it in different interfaces.
 
-### Remote variables
+#### path-driver
+This is the path to the driver. If you install from a Debian package this will be */var/lib/vscp/drivers/level2/libvscpl2drv-tcpiplink.so*.
 
-The following configuration remote variables are defined
+#### path-config
+This is the path to the driver configuration file (see below). This file determines the functionality of the driver. A good place for this file is in _/etc/vscp/tcpiplink.json_ It should be readable only by the user the VSCP daemon is run under (normally _vscp_) as it holds credentials to log in to a remote VSCP tcp/ip link interface. Never make it writable at this location.
 
-| Remote variable name | Type   | Description |
- | ------------- | ----   | -----------   |
- | **_interface**    | string | The socketcan interface to use. Typically this is “can0, can0, can1...” Defaults is vcan0 the first virtual interface. |
- | **_filter**       | string | Standard VSCP filter on string form. Used to filter what events that is received from the socketcan interface. If not give all events are received. |
- | **_mask**         | string | Standard VSCP mask in string form.  Used to filter what events that is received from the socketcan interface. If not give all events are received.   |
- | **config** | json | All of the above as a JSON object. |
+#### guid
+All level II drivers must have a unique GUID. There is many ways to obtain this GUID, Read more [here](https://grodansparadis.gitbooks.io/the-vscp-specification/vscp_globally_unique_identifiers.html). The tool [vscp_eth_to_guid](https://grodansparadis.github.io/vscp/#/configuring_the_vscp_daemon?id=think-before-guid) is a useful tool that is shipped with the VSCP daemon that will get you a unique GUID if you are working on a machine with an Ethernet interface.
 
-#### Filter string form
-1,0x0000,0x0006,ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00 as priority,class,type,GUID
+#### mqtt
+See the [VSCP configuration documentation](https://grodansparadis.github.io/vscp/#/configuring_the_vscp_daemon?id=config-mqtt) for info about this section. It is common for all drivers.
 
-#### Mask string form
-1,0x0000,0x0006,ff:ff:ff:ff:ff:ff:ff:01:00:00:00:00:00:00:00:00 as priority,class,type,GUID
+### vscpl2drv-tcpiplink driver config
 
----
+On start up the configuration is read from the path set in the driver configuration of the VSCP daemon, usually */etc/vscp/conf-file-name* and values are set from this location. If the **write** parameter is set to "true" the above location is a bad choice as the VSCP daemon will not be able to write to it. A better location is */var/lib/vscp/drivername/configure-name.json* or some other writable location.
 
-There are many Level I/II/III drivers available in VSCP & Friends framework that can be used with both VSCP Works and the VSCP Daemon and added to that Level II and Level III drivers that can be used with the VSCP Daemon.
+The configuration file have the following format
 
-Level I drivers is documented [here](https://grodansparadis.gitbooks.io/the-vscp-daemon/level_i_drivers.html).
+```json
+{
+  "debug" : false,
+  "write" : false,
+  "key-file": "/var/vscp/vscp.key",
+  "encryption" : "none|aes128|aes192|aes256",
+  "logging": {
+    "console-enable": true,
+    "console-level": "trace",
+    "console-pattern": "[vcpl2drv-tcpiplink %c] [%^%l%$] %v",
+    "file-enable": true,
+    "file-log-level": "debug",
+    "file-log-path" : "/var/log/vscp/vscpl1drv-tcpiplink.log",
+    "file-log-pattern": "[vcpl2drv-tcpiplink %c] [%^%l%$] %v",
+    "file-log-max-size": 50000,
+    "file-log-max-files": 7
+  }, 
+  "remote" : {
+    "host" : "192.168.1.7",
+    "port" : 9598,
+    "user" : "admin",
+    "password" : "secret",
+    "response-timeout": 0
+  },
+  "tls": {
+    "certificate" : "/srv/vscp/certs/tcpip_server.pem",
+    "certificate-chain" : "",
+    "verify-peer" : false,
+    "ca-path" : "",
+    "ca-file" : "",
+    "verify-depth" : 9,
+    "default-verify-paths" : true,
+    "cipher-list" : "DES-CBC3-SHA:AES128-SHA:AES128-GCM-SHA256",
+    "protocol-version" : 3,
+    "ssl_cache_timeout": -1,
+    "short-trust" : false
+  },
+  "filter" : {
+    "in-filter" : "incoming filter on string form",
+    "in-mask" : "incoming mask on string form",
+    "out-filter" : "outgoing filter on string form",
+    "out-mask" : "outgoing mask on string form"
+  }
+}
+```
 
-Level II drivers is documented [here](https://grodansparadis.gitbooks.io/the-vscp-daemon/level_ii_drivers.html)
+#### debug
+Set debug to _true_ to get debug information written to the log file. This can be a valuable help if things does not behave as expected.
 
-Level III drivers is documented [here](https://grodansparadis.gitbooks.io/the-vscp-daemon/level_iii_drivers.html)
+#### write
+If write is true dynamic changes to the configuration file will be possible to save dynamically to disk. That is, settings you do at runtime can be saved and be persistent. The safest place for a configuration file is in the VSCP configuration folder */etc/vscp/* but for dynamic saves are not allowed if you don't run the VSCP daemon as root (which you should not). Next best place is to use the folder */var/lib/vscp/drivers/level2/configure.json*. A default configuration file is written to /usr/share/vscp/drivers/level2/vscpl2drv-tcpiplink when the driver is installed.
+
+If you never intend to change driver parameters during runtime consider moving the configuration file to the VSCP daemon configuration folder is a good choice.
+
+#### guid
+All level II drivers must have a unique GUID. There is many ways to obtain this GUID, Read more [here](https://grodansparadis.gitbooks.io/the-vscp-specification/vscp_globally_unique_identifiers.html).
+
+##### **LoggingÄÄ
+
+Options for driver logging is set here.
+
+##### console-enable 
+Set to _true_ to log to the console.
+
+##### console-level
+Logging level for console log. Set to one of "off | critical | error | warn | info | debug | trace". 
+
+##### console-pattern
+The logging pattern for the console. The default is
+
+```
+"[vcpl2drv-tcpiplink] [%^%l%$] %v"
+```
+Patterns are described [here](https://spdlog.docsforge.com/v1.x/3.custom-formatting/#pattern-flags).
+
+##### file-enable 
+Set to _true_ to log to the console.
+
+##### file-level
+Set to one of "off | critical | error | warn | info | debug | trace" to set log level.
+
+### file-path" : "path to log file",
+This is a writable path to a file that will get log information written to it. This can be a valuable to have if things does not behave as expected.
+
+##### file-pattern
+The logging pattern for the console. The default is
+
+```
+"[vcpl2drv-tcpiplink] [%^%l%$] %v"
+```
+Patterns are described [here](https://spdlog.docsforge.com/v1.x/3.custom-formatting/#pattern-flags).
+
+##### file-max-size
+Max size for log file before it will rotate and a new file is created. Default is 5 Mb.
+
+##### file-max-files
+Max number of log files to keep. Default is 7
+
+#### **remote**
+
+##### host
+Remote VSCP tcp/ip link interface host to connect to. IP address or name.
+
+##### port
+Port to connect to on VSCP tcp/ip link interface on remote host. Default is 9598.
+
+##### user
+Username to login as on VSCP tcp/ip link interface on remote host.
+
+##### password
+Password to use on VSCP tcp/ip link interface remote host.
+
+##### response-timeout
+Response timeout in milliseconds. Connection will be restarted if this expires.
+
+#### **tls** 
+Transport layer security, SSL settings for link. Currently not used.
+
+##### in-filter
+Receiving filter. Filter and mask is a way to select which events is received by the driver. A filter have the following format
+
+> priority,vscpclass,vscptype,guid
+
+All values can be give in decimal or hexadecimal (preceded number with '0x'). GUID is always given i hexadecimal (without preceded '0x').
+
+Default setting is
+
+> 0,0,0,00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+
+Read the [vscpd manual](http://grodansparadis.github.io/vscp/#/) for more information about how filter/masks work.
+
+The default filter/mask pair means that all events are received by the driver.
+
+##### in-mask
+Receiving mask. Filter and mask is a way to select which events is received by the driver. A mask have the following format
+
+> priority,vscpclass,vscptype,guid
+
+All values can be give in decimal or hexadecimal (preceded number with '0x'). GUID is always given i hexadecimal (without preceded '0x').
+
+The mask have a binary one ('1') in the but position of the filter that should have a specific value and zero ('0') for a don't care bit.
+
+Default setting is
+
+> 0,0,0,00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+
+Read the vscpd manual for more information about how filter/masks work.
+
+The default filter/mask pair means that all events are received by the driver.
+
+##### out-filter
+Filter for transmitted data. For more information see _in-filter_ above.
+
+##### out-mask
+Mask for transmitted data. For more information see _in-mask_ above.
+
+## Windows
+See information from Linux. The only difference is the disk location from where configuration data is fetched.
+
+## Security considerations
+
+## Configuration file
+
+The configuration file for the driver holds host address, username and password for the remote host in un-encrypted form. It therefore must be protected by making it readable only by the person and tools that are allowed to do so. It is recommended to have read rights only for the _vscp_ user on this file.
+
+## TLS/SSL
+
+As TLS/SSL is not supported yet (it will be) in this driver it is important to understand that if used in an open environment like the internet it is not secure. People listening on the traffic can see both data and username/password credentials. It is therefore important to use the driver in a controlled environment and as early as possible move the flow of events to a secure environment like MQTT with TLS activated. This is often not a problem in a local cable based environment but is definitly a problem using wireless transmission that lack encryption.
+
+A solution is to use a SSL wrapper like [this one](https://github.com/cesanta/ssl_wrapper).
+
+#### ssl_certificate
+Path to SSL certificate file. This option is only required when at least one of the listening_ports is SSL The file must be in PEM format, and it must have both private key and certificate, see for example ssl_cert.pem. If this option is set, then the webserver serves SSL connections on the port set up to listen on.
+
+**Default**: /srv/vscp/certs/server.pem
+
+#### ssl_certificate_chain
+T.B.D.
+
+#### ssl_verify_peer
+Enable client's certificate verification by the server.
+
+**Default**: false
+
+#### ssl_ca_path
+Name of a directory containing trusted CA certificates for peers. Each file in the directory must contain only a single CA certificate. The files must be named by the subject name’s hash and an extension of “.0”. If there is more than one certificate with the same subject name they should have extensions ".0", ".1", ".2" and so on respectively.
+
+#### ssl_ca_file"
+Path to a .pem file containing trusted certificates for peers. The file may contain more than one certificate.
+
+#### ssl_verify_depth
+Sets maximum depth of certificate chain. If client's certificate chain is longer than the depth set here connection is refused.
+
+**Default**: 9
+
+#### ssl_default_verify_paths
+Loads default trusted certificates locations set at openssl compile time.
+
+**Default**: true
+
+#### ssl_cipher_list
+List of ciphers to present to the client. Entries should be separated by colons, commas or spaces.
+
+| Selection	| Description |
+| ========= | =========== |
+| ALL |	All available ciphers |
+| ALL:!eNULL | All ciphers excluding NULL ciphers |
+| AES128:!MD5 | AES 128 with digests other than MD5 |
+
+See [this entry in OpenSSL documentation](https://www.openssl.org/docs/manmaster/apps/ciphers.html) for full list of options and additional examples.
+
+**Default**: "DES-CBC3-SHA:AES128-SHA:AES128-GCM-SHA256",
+
+#### ssl_protocol_version
+Sets the minimal accepted version of SSL/TLS protocol according to the table:
+
+| Selected protocols | setting |
+| ================== | ======= |
+| SSL2+SSL3+TLS1.0+TLS1.1+TLS1.2 | 0 |
+| SSL3+TLS1.0+TLS1.1+TLS1.2 | 1 |
+| TLS1.0+TLS1.1+TLS1.2 | 2 |
+| TLS1.1+TLS1.2	| 3 |
+| TLS1.2 | 4 |
+
+**Default**: 4.
+
+#### ssl_short_trust
+Enables the use of short lived certificates. This will allow for the certificates and keys specified in ssl_certificate, ssl_ca_file and ssl_ca_path to be exchanged and reloaded while the server is running.
+
+In an automated environment it is advised to first write the new pem file to a different filename and then to rename it to the configured pem file name to increase performance while swapping the certificate.
+
+Disk IO performance can be improved when keeping the certificates and keys stored on a tmpfs (linux) on a system with very high throughput.
+
+**Default**: false 
+
+# FILES
+
+*/var/lib/vscp/drivers/level2/libvscpl2drv-tcpiplink.so*
+:   The driver (Linux).
+
+*resources/linux/tcpiplink.json*
+:   Sample configuration in the source repository (installed with the driver).
 
 # SEE ALSO
 
-`vscpd` (8).
-`uvscpd` (8).
-`vscpworks` (1).
-`vscpcmd` (1).
-`vscp-makepassword` (1).
-`vscphelperlib` (1).
+**vscpd**(8), **vscp-dump**(1), **vscp-send**(1), **vscpl2drv-socketcan**(1), **vscpl2drv-tcpipsrv**(1)
 
-The VSCP project homepage is here <https://www.vscp.org>.
+The source code and the full documentation: <https://github.com/grodansparadis/vscpl2drv-tcpiplink>
 
-The [manual](https://grodansparadis.gitbooks.io/the-vscp-daemon) for vscpd contains full documentation. Other documentation can be found here <https://grodansparadis.gitbooks.io>.
-
-The vscpd source code may be downloaded from <https://github.com/grodansparadis/vscp>. Source code for other system components of VSCP & Friends are here <https://github.com/grodansparadis>
+The VSCP specification: <https://grodansparadis.github.io/vscp-doc-spec>
 
 # COPYRIGHT
-Copyright 2000-2021 Åke Hedman, the VSCP Project - MIT license.
 
-
-
-
+Copyright 2000-2026 Åke Hedman, Grodans Paradis AB. See the LICENSE file of the driver.
