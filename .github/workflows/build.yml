@@ -15,7 +15,7 @@ jobs:
 
     steps:
     # https://github.com/actions/checkout  
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
       with:
         submodules: 'recursive'
 
@@ -92,7 +92,7 @@ jobs:
         /home/runner/work/vscpl2drv-tcpiplink/vscpl2drv-tcpiplink/build/vscpl2drv-tcpiplink_${{ env.VERSION_STRING }}.deb
         SHA256SUMS_PATTERNS
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.os }}_vscpl2drv-tcpiplink_${{ env.VERSION_STRING }}.deb
         path: |
